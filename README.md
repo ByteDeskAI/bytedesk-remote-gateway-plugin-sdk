@@ -18,4 +18,11 @@ gatewaysdk.Serve(gatewaysdk.Config{Handler: mux})
 Module path stays `bytedesk-remote-gateway-plugin-sdk` until a rename cutover.
 The product name is **gateway SDK**.
 
+## Versioning
+
+This SDK’s SemVer (`VERSION`) is independent of `bytedesk-sdk-dependencies`.
+`go.mod` `require`s the dependency revision to use; those version numbers
+need not match. Bump this repo when the gateway SDK changes. Bump the
+`require` when adopting a newer common contract.
+
 Vault plugins use `bytedesk-vault-sdk` (same inherited Manifest, `VAULT_PLUGIN_*`).
