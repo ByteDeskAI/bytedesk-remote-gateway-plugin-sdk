@@ -40,3 +40,17 @@ func TestValidateRejectsMissingBinary(t *testing.T) {
 		t.Fatal("expected missing binary")
 	}
 }
+
+func TestValidateDirDiscoverStringPublisherAndNoVersion(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "plugin.json"), []byte(`{"id":"example","spawn":false,"publisher":"bytedesk"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m, err := ValidateDirDiscover(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if m.ID != "example" || m.Publisher == nil || m.Publisher.ID != "bytedesk" {
+		t.Fatalf("got %+v", m)
+	}
+}
