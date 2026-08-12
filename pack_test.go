@@ -41,6 +41,14 @@ func TestValidateRejectsMissingBinary(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsVaultOnly(t *testing.T) {
+	dir := t.TempDir()
+	_ = os.WriteFile(filepath.Join(dir, "plugin.json"), []byte(`{"id":"v","version":"1.0.0","targets":["vault"]}`), 0o644)
+	if _, err := ValidateDir(dir); err == nil {
+		t.Fatal("expected vault-only plugin rejected on gateway SDK")
+	}
+}
+
 func TestValidateDirDiscoverStringPublisherAndNoVersion(t *testing.T) {
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "plugin.json"), []byte(`{"id":"example","spawn":false,"publisher":"bytedesk"}`), 0o644); err != nil {
