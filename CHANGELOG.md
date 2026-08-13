@@ -5,6 +5,13 @@
 ### Changed
 
 - docs: SDK SemVer is independent of `sdk-dependencies`; `go.mod` `require` is the pin
+- require `bytedesk-sdk-dependencies v0.1.3` (role / requires / trial)
+
+## [0.1.3] - 2026-08-13
+
+### Changed
+
+- require `bytedesk-sdk-dependencies v0.1.3`; re-export `RoleSystem`, `RoleExtension`, `Requirement`
 
 ## [0.1.2] - 2026-08-12
 

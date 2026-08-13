@@ -15,12 +15,15 @@ type (
 	LauncherSpec = plugin.LauncherSpec
 	Pricing      = plugin.Pricing
 	Publisher    = plugin.Publisher
+	Requirement  = plugin.Requirement
 	Envelope     = bus.Envelope
 )
 
 const (
 	TargetGateway = plugin.TargetGateway
 	TargetVault   = plugin.TargetVault
+	RoleSystem    = plugin.RoleSystem
+	RoleExtension = plugin.RoleExtension
 )
 
 // ParseManifest decodes plugin.json using the common contract.

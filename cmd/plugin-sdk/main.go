@@ -67,5 +67,5 @@ func die(err error) {
 }
 
 func readVersion() string {
-	return "0.1.2"
+	return "0.1.3"
 }
