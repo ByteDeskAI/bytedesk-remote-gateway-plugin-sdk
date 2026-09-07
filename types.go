@@ -26,6 +26,23 @@ type (
 	FamilyMember   = plugin.FamilyMember
 	ExtensionPoint = plugin.ExtensionPoint
 	Provider       = plugin.Provider
+
+	// The plugin contract (ADR 0024). A plugin implements these once; whether
+	// the host links it in or spawns it is a deployment decision read from the
+	// manifest's spawn field, and the Host handed to Start differs only in
+	// whether its calls cross a socket. Serve/ServeContext below is the
+	// entry point for the spawned mode.
+	Plugin = plugin.Plugin
+	Host   = plugin.Host
+	Logger = plugin.Logger
+
+	// Optional capabilities, interface-segregated: implement only what you
+	// need and the host type-asserts for each.
+	HTTPPlugin        = plugin.HTTPPlugin
+	HealthContributor = plugin.HealthContributor
+	CommandHandler    = plugin.CommandHandler
+	Validator         = plugin.Validator
+	Readier           = plugin.Readier
 )
 
 const (

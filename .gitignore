@@ -1,2 +1,5 @@
 /dist/
 /plugin-sdk
+
+go.work
+go.work.sum
