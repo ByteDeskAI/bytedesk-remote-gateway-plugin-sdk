@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -36,6 +37,7 @@ type rpcHost struct {
 	socket string
 	client *http.Client
 
+	startMu   sync.Mutex
 	mu        sync.Mutex
 	subs      map[string]func(bus.Envelope) // subscription id -> handler
 	ticks     map[string]func()             // timer id -> callback
@@ -56,12 +58,16 @@ type rpcHost struct {
 // to read GATEWAY_HOST_SOCKET from the environment. Close the returned host by
 // cancelling the context passed to Serve.
 func NewHost(socket string) plugin.Host {
+	if socket == "" {
+		socket = os.Getenv(EnvHostSocket)
+	}
 	h := &rpcHost{
 		socket: socket,
 		subs:   map[string]func(bus.Envelope){},
 		ticks:  map[string]func(){},
 	}
 	h.client = &http.Client{
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse },
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 				return (&net.Dialer{}).DialContext(ctx, "unix", h.socket)
@@ -75,6 +81,8 @@ func NewHost(socket string) plugin.Host {
 func (h *rpcHost) url(path string) string { return "http://host" + path }
 
 func (h *rpcHost) post(ctx context.Context, path string, body, out any) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 	var buf bytes.Buffer
 	if body != nil {
 		if err := json.NewEncoder(&buf).Encode(body); err != nil {
@@ -91,7 +99,7 @@ func (h *rpcHost) post(ctx context.Context, path string, body, out any) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("host %s: %s", path, resp.Status)
 	}
 	if out != nil {
@@ -102,24 +110,42 @@ func (h *rpcHost) post(ctx context.Context, path string, body, out any) error {
 
 // Start opens the callback stream. Serve calls this; a plugin does not.
 func (h *rpcHost) Start(ctx context.Context) error {
+	h.startMu.Lock()
+	defer h.startMu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	h.mu.Lock()
 	if h.started {
 		h.mu.Unlock()
 		return nil
 	}
-	h.started = true
 	ctx, cancel := context.WithCancel(ctx)
 	h.stop = cancel
 	h.mu.Unlock()
-
 	ready := make(chan error, 1)
 	go h.readCallbacks(ctx, ready)
+	timer := time.NewTimer(5 * time.Second)
+	defer timer.Stop()
+	var err error
 	select {
-	case err := <-ready:
-		return err
-	case <-time.After(5 * time.Second):
-		return fmt.Errorf("host callback stream did not open")
+	case err = <-ready:
+	case <-ctx.Done():
+		err = ctx.Err()
+	case <-timer.C:
+		err = fmt.Errorf("host callback stream did not open")
 	}
+	if err != nil {
+		cancel()
+		return err
+	}
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	h.started = true
+	return nil
 }
 
 func (h *rpcHost) readCallbacks(ctx context.Context, ready chan<- error) {
@@ -134,6 +160,10 @@ func (h *rpcHost) readCallbacks(ctx context.Context, ready chan<- error) {
 		return
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		ready <- fmt.Errorf("host callbacks: %s", resp.Status)
+		return
+	}
 	ready <- nil
 
 	sc := bufio.NewScanner(resp.Body)
@@ -351,10 +381,10 @@ func (h *rpcHost) Close() {
 	stop := h.stop
 	h.stop = nil
 	h.started = false
-	h.mu.Unlock()
 	if stop != nil {
 		stop()
 	}
+	h.mu.Unlock()
 	if tr, ok := h.client.Transport.(*http.Transport); ok {
 		tr.CloseIdleConnections()
 	}

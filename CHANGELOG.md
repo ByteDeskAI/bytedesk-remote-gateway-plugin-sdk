@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0-rc.3] - 2026-09-08
+
+### Fixed
+
+- Callback stream admission rejects HTTP errors, respects caller cancellation and permits retry after failed admission. Concurrent startup waits for readiness.
+- Host RPC calls have a five-second upper deadline and reject redirects. Empty NewHost socket reads GATEWAY_HOST_SOCKET as documented.
+
 ## [Unreleased]
 
 ## [0.4.0-rc.2] - 2026-09-08
