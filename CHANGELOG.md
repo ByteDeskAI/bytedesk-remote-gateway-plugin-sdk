@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.2] - 2026-09-08
+
+### Added
+
+- ServePlugin runs the SDK Plugin lifecycle, negotiates required features, rolls back failed starts and activation, and performs bounded-deadline shutdown.
+
+### Fixed
+
+- Adopt canonical browser declarations with normalized file endings from common SDK v0.4.0-rc.2.
+
 ## [0.4.0-rc.1] - 2026-09-08
 
 ### Added
