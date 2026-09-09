@@ -31,6 +31,34 @@ func TestDocumentVectorsComeFromPinnedCommonSDK(t *testing.T) {
 	}
 }
 
+func TestTerminalPresentationVectorsComeFromPinnedCommonSDK(t *testing.T) {
+	moduleDir, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/ByteDeskAI/bytedesk-sdk-dependencies").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, err := os.ReadFile(filepath.Join(strings.TrimSpace(string(moduleDir)), "plugin", "testdata", "terminal_presentation.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	actual, err := os.ReadFile("ui/testdata/terminal_presentation.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(actual, expected) {
+		t.Fatal("browser terminal presentation vectors drifted from the pinned common SDK")
+	}
+}
+
+func TestTerminalPresentationHelpersReexportCommonContract(t *testing.T) {
+	request := presentationRequest()
+	if err := ValidatePresentationRequest(request); err != nil {
+		t.Fatal(err)
+	}
+	if TerminalPresentationInterface != "terminal.presentation.v1" || TerminalPresentationCommand != "terminal.presentation.project.v1" {
+		t.Fatal("terminal presentation identifiers drifted")
+	}
+}
+
 func TestDocumentHelpersReexportCommonContract(t *testing.T) {
 	if err := ValidateDocumentPath("/files/*path"); err != nil {
 		t.Fatal(err)

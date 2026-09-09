@@ -1,6 +1,8 @@
 package pluginsdk
 
 import (
+	"io"
+
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/bus"
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/plugin"
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/semver"
@@ -52,6 +54,20 @@ type (
 	HostCapabilities     = plugin.HostCapabilities
 	Permissions          = plugin.Permissions
 	UIContribution       = plugin.UIContribution
+
+	// Terminal presentation contracts are canonical common-SDK aliases. Hosts
+	// select a concrete owner/provider before dispatching; the command identifier
+	// is not a process-global CommandHandler registration key.
+	PresentationLease            = plugin.PresentationLease
+	TerminalBindingContext       = plugin.TerminalBindingContext
+	TmuxPresentationContext      = plugin.TmuxPresentationContext
+	PresentationTerminal         = plugin.PresentationTerminal
+	PresentationRequest          = plugin.PresentationRequest
+	PresentationGroup            = plugin.PresentationGroup
+	PresentationBadge            = plugin.PresentationBadge
+	PresentationItem             = plugin.PresentationItem
+	PresentationResult           = plugin.PresentationResult
+	TerminalPresentationProvider = plugin.TerminalPresentationProvider
 )
 
 const (
@@ -98,6 +114,21 @@ const (
 	SlotBadge                 = plugin.SlotBadge
 	SlotSettings              = plugin.SlotSettings
 	SlotCommand               = plugin.SlotCommand
+
+	TerminalPresentationPoint        = plugin.TerminalPresentationPoint
+	TerminalPresentationInterface    = plugin.TerminalPresentationInterface
+	TerminalPresentationCommand      = plugin.TerminalPresentationCommand
+	TerminalPresentationBindingRead  = plugin.TerminalPresentationBindingRead
+	TerminalPresentationMaxBytes     = plugin.TerminalPresentationMaxBytes
+	TerminalPresentationMaxTerminals = plugin.TerminalPresentationMaxTerminals
+	TerminalPresentationMaxGroups    = plugin.TerminalPresentationMaxGroups
+	TerminalPresentationMaxBadges    = plugin.TerminalPresentationMaxBadges
+	TerminalPresentationDeadlineMS   = plugin.TerminalPresentationDeadlineMS
+	TerminalBindingNone              = plugin.TerminalBindingNone
+	TerminalBindingTmux              = plugin.TerminalBindingTmux
+	FreshnessFresh                   = plugin.FreshnessFresh
+	FreshnessStale                   = plugin.FreshnessStale
+	FreshnessUnknown                 = plugin.FreshnessUnknown
 )
 
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
@@ -112,6 +143,22 @@ func MatchDocumentPath(pattern, escapedPath string) (map[string]string, bool) {
 
 func DocumentPathsOverlap(a, b string) (bool, error) {
 	return plugin.DocumentPathsOverlap(a, b)
+}
+
+func DecodePresentationRequest(r io.Reader) (PresentationRequest, error) {
+	return plugin.DecodePresentationRequest(r)
+}
+
+func DecodePresentationResult(r io.Reader, request PresentationRequest, current []PresentationTerminal) (PresentationResult, error) {
+	return plugin.DecodePresentationResult(r, request, current)
+}
+
+func ValidatePresentationRequest(request PresentationRequest) error {
+	return plugin.ValidatePresentationRequest(request)
+}
+
+func ValidatePresentationResult(request PresentationRequest, current []PresentationTerminal, result PresentationResult) error {
+	return plugin.ValidatePresentationResult(request, current, result)
 }
 
 // LifecycleEvent is the bus type published when a plugin enters state, e.g.

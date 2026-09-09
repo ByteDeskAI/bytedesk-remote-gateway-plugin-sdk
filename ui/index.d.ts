@@ -1,5 +1,10 @@
 export * from './contracts.js'
-import type { HostCapabilities, RuntimeSnapshot } from './contracts.js'
+import type { HostCapabilities, PresentationRequest, PresentationResult, RuntimeSnapshot } from './contracts.js'
+
+export const terminalPresentationCommand: 'terminal.presentation.project.v1'
+
+/** Dispatch through an already owner-scoped host facade. Provider selection is host-owned. */
+export function projectTerminalPresentation(host: Pick<PluginUIHost, 'request'>, request: PresentationRequest): Promise<PresentationResult>
 
 /** Compare lossless nonnegative decimal revisions within one host epoch. */
 export function compareRuntimeRevision(a: string, b: string): -1 | 0 | 1

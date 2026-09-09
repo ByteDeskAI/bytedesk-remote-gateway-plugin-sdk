@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0-rc.7] - 2026-09-09
+
+### Added
+
+- Adopt canonical `terminal.presentation.v1` types, validators, generated TypeScript declarations and conformance vectors from common SDK v0.4.0-rc.6.
+- Selected-owner Go dispatch and spawned-plugin HTTP adapters for `terminal.presentation.project.v1`, plus an owner-scoped browser request helper. Multiple providers do not compete for a global `CommandHandler` name.
+
 ## [0.4.0-rc.6] - 2026-09-09
 
 ### Added

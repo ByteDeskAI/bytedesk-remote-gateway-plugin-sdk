@@ -1,6 +1,14 @@
 const decimal = /^(0|[1-9][0-9]*)$/
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value)
 
+export const terminalPresentationCommand = 'terminal.presentation.project.v1'
+
+/** Dispatch through an already owner-scoped host facade. Provider selection is host-owned. */
+export async function projectTerminalPresentation(host, request) {
+  if (!host || typeof host.request !== 'function') throw new TypeError('owner-scoped plugin UI host required')
+  return host.request(terminalPresentationCommand, request)
+}
+
 function documentSegments(pattern) {
   if (typeof pattern !== 'string' || !pattern.startsWith('/') || pattern === '/') return null
   const parts = pattern.slice(1).split('/')

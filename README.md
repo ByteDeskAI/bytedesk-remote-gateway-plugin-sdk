@@ -44,6 +44,43 @@ cleanup on withdrawal, including cleanup returned after an asynchronous mount
 resolves late. The SDK type declaration does not prove a host implements these
 behaviors; unsupported hosts must not advertise the capability.
 
+### Terminal presentation owner dispatch
+
+`terminal.presentation.v1` is inherited from common SDK v0.4.0-rc.6. A host may
+admit multiple providers for `terminal.presentation.project.v1`; it selects one
+owner/provider first and then calls:
+
+```go
+result, err := gatewaysdk.DispatchTerminalPresentation(
+    ctx,
+    gatewaysdk.TerminalPresentationSelection{
+        PluginID: pluginID, ProviderID: providerID,
+        Generation: generation, Provider: selectedProvider,
+    },
+    request,
+    resolveCurrentAuthorizedTerminals,
+)
+```
+
+`selectedProvider` implements the canonical aliased
+`TerminalPresentationProvider`. The selection identity must exactly match the
+request lease. The helper validates the request, applies the canonical two-second
+deadline, invokes only that provider instance, resolves current authority after
+the provider returns, and validates the complete replacement against the captured
+request and current authorized terminal incarnations. It never registers
+`TerminalPresentationCommand` in the global `CommandHandler` namespace.
+
+Spawned plugins use `TerminalPresentationHTTPHandler(selection)` as their
+`HTTPPlugin.Handler()` (or mount it in that handler). The host selects
+the owner-specific plugin socket and POSTs canonical JSON to
+`/terminal.presentation.project.v1`. This is the supported external transport;
+the adapter intentionally does not implement `CommandHandler`. Because the
+spawned process cannot authoritatively resolve the host's current principal set,
+the host must decode and validate the returned result against its current
+authorized terminal incarnations before admission. In a UI module,
+`projectTerminalPresentation(ownerScopedHost, request)` uses the already
+owner-scoped `PluginUIHost.request` facade and does not perform provider selection.
+
 Panel `documentPaths` and the Go `ValidateDocumentPath`, `MatchDocumentPath`,
 `DocumentPathsOverlap` helpers come from the pinned common SDK. Browser helpers
 `isDocumentPath`, `matchDocumentPath`, `documentPathsOverlap` implement the same
