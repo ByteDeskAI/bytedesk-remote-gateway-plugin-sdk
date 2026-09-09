@@ -83,6 +83,8 @@ const (
 	FeatureScopedHost         = plugin.FeatureScopedHost
 	FeatureActivationCheck    = plugin.FeatureActivationCheck
 	FeatureShellContributions = plugin.FeatureShellContributions
+	FeatureDocumentPaths      = plugin.FeatureDocumentPaths
+	FeatureUIModuleMount      = plugin.FeatureUIModuleMount
 	DesiredUnknown            = plugin.DesiredUnknown
 	DesiredAbsent             = plugin.DesiredAbsent
 	DesiredDisabled           = plugin.DesiredDisabled
@@ -100,6 +102,16 @@ const (
 
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
 	return plugin.CheckProtocol(have, need)
+}
+
+func ValidateDocumentPath(pattern string) error { return plugin.ValidateDocumentPath(pattern) }
+
+func MatchDocumentPath(pattern, escapedPath string) (map[string]string, bool) {
+	return plugin.MatchDocumentPath(pattern, escapedPath)
+}
+
+func DocumentPathsOverlap(a, b string) (bool, error) {
+	return plugin.DocumentPathsOverlap(a, b)
 }
 
 // LifecycleEvent is the bus type published when a plugin enters state, e.g.

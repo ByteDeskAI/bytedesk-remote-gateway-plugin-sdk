@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0-rc.6] - 2026-09-09
+
+### Added
+
+- Adopt canonical document-path contributions and helpers from common SDK v0.4.0-rc.5, with matching browser helpers and pinned parity vectors.
+- Framework-independent UI location and replace-navigation ports for the negotiated module mount contract; no host router or rendering context crosses the SDK boundary.
+
 ## [0.4.0-rc.5] - 2026-09-09
 
 ### Added

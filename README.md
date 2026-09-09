@@ -33,6 +33,27 @@ Version 0.4 re-exports the common runtime model and optional `ActivationChecker`
 
 The root npm package `@bytedesk/gateway-plugin-ui` has no framework dependencies. Its shared types are generated from the pinned common Go SDK, and its `PluginUIModule.mount(element, host)` contract returns a cleanup function. The host supplies scoped identity, an abort signal, navigation and brokered request/subscription operations. Each plugin owns its renderer; no private React instance crosses the contract. Privileged in-page modules still require explicit trust; this interface alone is not a sandbox.
 
+Modules using that mount contract require `ui.mount.v1` through protocol
+negotiation. `host.location()` exposes the current admitted document location
+as raw `pathname`, `search`, `hash` and once-decoded `params`; changes arrive as
+`host.location` subscription events with the same location shape. Navigation
+accepts an optional `{replace: true}` without exposing the host router. A
+plugin-owned React root can bundle its own React and does not share host context.
+Hosts must abort the facade, revoke its operations/subscriptions and call mount
+cleanup on withdrawal, including cleanup returned after an asynchronous mount
+resolves late. The SDK type declaration does not prove a host implements these
+behaviors; unsupported hosts must not advertise the capability.
+
+Panel `documentPaths` and the Go `ValidateDocumentPath`, `MatchDocumentPath`,
+`DocumentPathsOverlap` helpers come from the pinned common SDK. Browser helpers
+`isDocumentPath`, `matchDocumentPath`, `documentPathsOverlap` implement the same
+grammar and use the pinned shared vectors, checked for drift by Go tests. A
+terminal `*name` matches **one or more** segments; `/files` and `/files/*path`
+cover root and descendants. Match an escaped pathname, never a whole URL or a
+router-decoded value. Parameters are decoded data and must not be decoded or
+cleaned again. Root `/` and reserved host infrastructure are not plugin claims.
+Manifests declaring document paths must require `ui.document-paths.v1`.
+
 Install the reviewed source tag as an exact git dependency during prerelease integration, or distribute `npm pack` through the established package release channel. No local sibling path is needed in consumer manifests. `npm test` checks lossless revision ordering and untrusted snapshot validation; `go test ./...` verifies RPC negotiation and that `ui/contracts.d.ts` exactly matches the pinned common SDK generator. Runtime snapshot revisions are decimal strings and compare only within the same epoch.
 
 

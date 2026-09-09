@@ -9,8 +9,40 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestDocumentVectorsComeFromPinnedCommonSDK(t *testing.T) {
+	moduleDir, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/ByteDeskAI/bytedesk-sdk-dependencies").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, err := os.ReadFile(filepath.Join(strings.TrimSpace(string(moduleDir)), "plugin", "testdata", "document_paths.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	actual, err := os.ReadFile("ui/testdata/document_paths.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(actual, expected) {
+		t.Fatal("browser document vectors drifted from the pinned common SDK")
+	}
+}
+
+func TestDocumentHelpersReexportCommonContract(t *testing.T) {
+	if err := ValidateDocumentPath("/files/*path"); err != nil {
+		t.Fatal(err)
+	}
+	params, ok := MatchDocumentPath("/files/*path", "/files/a/b")
+	if !ok || params["path"] != "a/b" {
+		t.Fatalf("document match = %v, %v", params, ok)
+	}
+	if overlap, err := DocumentPathsOverlap("/files/*path", "/files/:id"); err != nil || !overlap {
+		t.Fatalf("document overlap = %v, %v", overlap, err)
+	}
+}
 
 func TestBrowserDeclarationsComeFromPinnedCommonSDK(t *testing.T) {
 	generated, err := exec.Command("go", "run", "github.com/ByteDeskAI/bytedesk-sdk-dependencies/cmd/plugin-typescript").Output()
