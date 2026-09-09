@@ -34,3 +34,10 @@ Version 0.4 re-exports the common runtime model and optional `ActivationChecker`
 The root npm package `@bytedesk/gateway-plugin-ui` has no framework dependencies. Its shared types are generated from the pinned common Go SDK, and its `PluginUIModule.mount(element, host)` contract returns a cleanup function. The host supplies scoped identity, an abort signal, navigation and brokered request/subscription operations. Each plugin owns its renderer; no private React instance crosses the contract. Privileged in-page modules still require explicit trust; this interface alone is not a sandbox.
 
 Install the reviewed source tag as an exact git dependency during prerelease integration, or distribute `npm pack` through the established package release channel. No local sibling path is needed in consumer manifests. `npm test` checks lossless revision ordering and untrusted snapshot validation; `go test ./...` verifies RPC negotiation and that `ui/contracts.d.ts` exactly matches the pinned common SDK generator. Runtime snapshot revisions are decimal strings and compare only within the same epoch.
+
+
+`Requirement.MatchesVersion(actual)` and `ValidateVersionConstraint()` are inherited
+from common SDK v0.4.0-rc.4. Hosts must check version compatibility alongside runtime
+availability; empty constraints preserve legacy versions. Range syntax and prerelease
+behavior are documented by the common SDK. This adds a pinned semantic-version parser
+through the common dependency, without extending Host or Plugin methods.

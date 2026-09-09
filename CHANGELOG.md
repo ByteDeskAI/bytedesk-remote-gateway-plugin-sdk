@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0-rc.5] - 2026-09-09
+
+### Added
+
+- Adopt common SDK v0.4.0-rc.4 and expose canonical required-peer version matching through the existing Requirement alias. Malformed manifest version constraints are rejected by shared validation.
+
 ## [0.4.0-rc.4] - 2026-09-08
 
 ### Added
