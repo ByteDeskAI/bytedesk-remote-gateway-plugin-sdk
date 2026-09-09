@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.1] - 2026-09-08
+
+### Added
+
+- Re-export live runtime, activation, permissions, protocol and UI contribution contracts from common SDK v0.4.0-rc.1.
+- Optional bounded RPC negotiation rejects unsupported required features and missing generation identity.
+- Portable @bytedesk/gateway-plugin-ui package with generated shared declarations, module mount/cleanup contract and lossless snapshot validation.
+
 ## [0.3.0] - 2026-09-06
 
 ### Added

@@ -184,6 +184,24 @@ func (h *rpcHost) Request(ctx context.Context, env bus.Envelope) (bus.Envelope, 
 	return reply, err
 }
 
+// Negotiate is optional for legacy callers. A plugin requiring new features
+// must call it before using them; transport/version failures never grant access.
+func (h *rpcHost) Negotiate(ctx context.Context, need plugin.ProtocolRequirements) (plugin.HostCapabilities, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	var have plugin.HostCapabilities
+	if err := h.post(ctx, "/negotiate", need, &have); err != nil {
+		return plugin.HostCapabilities{}, err
+	}
+	if err := plugin.CheckProtocol(have, need); err != nil {
+		return plugin.HostCapabilities{}, err
+	}
+	if have.Major != 0 && (have.PluginID == "" || have.Generation == "") {
+		return plugin.HostCapabilities{}, fmt.Errorf("host negotiation omitted scoped plugin identity")
+	}
+	return have, nil
+}
+
 func (h *rpcHost) Subscribe(eventType string, fn func(bus.Envelope)) (unsubscribe func()) {
 	// The id is generated here and sent to the host, rather than assigned by
 	// the host and returned. The host starts delivering as soon as it
@@ -343,5 +361,6 @@ func (h *rpcHost) Close() {
 }
 
 var _ plugin.Host = (*rpcHost)(nil)
+var _ plugin.Negotiator = (*rpcHost)(nil)
 var _ HostStarter = (*rpcHost)(nil)
 var _ HostCloser = (*rpcHost)(nil)

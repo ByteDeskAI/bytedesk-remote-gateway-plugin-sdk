@@ -38,11 +38,20 @@ type (
 
 	// Optional capabilities, interface-segregated: implement only what you
 	// need and the host type-asserts for each.
-	HTTPPlugin        = plugin.HTTPPlugin
-	HealthContributor = plugin.HealthContributor
-	CommandHandler    = plugin.CommandHandler
-	Validator         = plugin.Validator
-	Readier           = plugin.Readier
+	HTTPPlugin           = plugin.HTTPPlugin
+	HealthContributor    = plugin.HealthContributor
+	CommandHandler       = plugin.CommandHandler
+	Validator            = plugin.Validator
+	Readier              = plugin.Readier
+	ActivationChecker    = plugin.ActivationChecker
+	Negotiator           = plugin.Negotiator
+	RuntimeStatus        = plugin.RuntimeStatus
+	RuntimeSnapshot      = plugin.RuntimeSnapshot
+	LifecycleOperation   = plugin.LifecycleOperation
+	ProtocolRequirements = plugin.ProtocolRequirements
+	HostCapabilities     = plugin.HostCapabilities
+	Permissions          = plugin.Permissions
+	UIContribution       = plugin.UIContribution
 )
 
 const (
@@ -68,7 +77,29 @@ const (
 
 	EventExtensionRegistered = plugin.EventExtensionRegistered
 	EventExtensionRevoked    = plugin.EventExtensionRevoked
+
+	ProtocolMajor             = plugin.ProtocolMajor
+	FeatureRuntimeSnapshot    = plugin.FeatureRuntimeSnapshot
+	FeatureScopedHost         = plugin.FeatureScopedHost
+	FeatureActivationCheck    = plugin.FeatureActivationCheck
+	FeatureShellContributions = plugin.FeatureShellContributions
+	DesiredAbsent             = plugin.DesiredAbsent
+	DesiredDisabled           = plugin.DesiredDisabled
+	DesiredEnabled            = plugin.DesiredEnabled
+	OperationPending          = plugin.OperationPending
+	OperationCompleted        = plugin.OperationCompleted
+	OperationFailed           = plugin.OperationFailed
+	SlotDefaultView           = plugin.SlotDefaultView
+	SlotToolbar               = plugin.SlotToolbar
+	SlotOverlay               = plugin.SlotOverlay
+	SlotBadge                 = plugin.SlotBadge
+	SlotSettings              = plugin.SlotSettings
+	SlotCommand               = plugin.SlotCommand
 )
+
+func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
+	return plugin.CheckProtocol(have, need)
+}
 
 // LifecycleEvent is the bus type published when a plugin enters state, e.g.
 // LifecycleEvent(StateRunning) == "event.plugin.running".
