@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0-rc.4] - 2026-09-08
+
+### Added
+
+- Re-export canonical unknown desired state and validate unavailable recovery snapshots in the UI SDK. Unknown intent can never grant availability.
+
 ## [0.4.0-rc.3] - 2026-09-08
 
 ### Fixed

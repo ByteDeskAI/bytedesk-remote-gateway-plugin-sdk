@@ -17,7 +17,7 @@ export function isRuntimeSnapshot(value) {
   for (const plugin of value.plugins || []) {
     if (!record(plugin) || typeof plugin.id !== 'string' || !plugin.id || seen.has(plugin.id) ||
         typeof plugin.installed !== 'boolean' || typeof plugin.available !== 'boolean' ||
-        !['absent', 'disabled', 'enabled'].includes(plugin.desiredState) ||
+        !['unknown', 'absent', 'disabled', 'enabled'].includes(plugin.desiredState) ||
         typeof plugin.observedState !== 'string' || !plugin.observedState ||
         typeof plugin.generation !== 'string' ||
         (plugin.reason !== undefined && typeof plugin.reason !== 'string') ||

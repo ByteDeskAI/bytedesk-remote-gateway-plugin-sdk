@@ -24,3 +24,10 @@ test('untrusted availability cannot invent an installed or active generation', (
   assert.equal(isRuntimeSnapshot({ ...snapshot([p]), epoch: '' }), false)
   assert.equal(isRuntimeSnapshot(snapshot([{ ...p, available: false, observedState: 'degraded' }])) , true)
 })
+
+test('unknown durable intent is a valid recovery state but never available', () => {
+  const p = { id: 'sessions', installed: true, desiredState: 'unknown', observedState: 'failed', available: false, generation: '', reason: 'intent store unreadable' }
+  const value = { epoch: 'host1', revision: '2', plugins: [p] }
+  assert.equal(isRuntimeSnapshot(value), true)
+  assert.equal(isRuntimeSnapshot({ ...value, plugins: [{ ...p, available: true, generation: 'g1' }] }), false)
+})

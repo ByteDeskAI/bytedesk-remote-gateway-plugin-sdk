@@ -83,6 +83,7 @@ const (
 	FeatureScopedHost         = plugin.FeatureScopedHost
 	FeatureActivationCheck    = plugin.FeatureActivationCheck
 	FeatureShellContributions = plugin.FeatureShellContributions
+	DesiredUnknown            = plugin.DesiredUnknown
 	DesiredAbsent             = plugin.DesiredAbsent
 	DesiredDisabled           = plugin.DesiredDisabled
 	DesiredEnabled            = plugin.DesiredEnabled
