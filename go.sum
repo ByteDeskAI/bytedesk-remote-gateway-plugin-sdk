@@ -1,4 +1,4 @@
-github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.7 h1:BhtgOjYVoe8ch2btFJCw4qhc+vQeC8a/EuUnCINIfTE=
-github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.7/go.mod h1:MYucZhH3KqdTUXHOYPDMKisvNIEuz1jQyjo63GyJqVA=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.8 h1:1mepzz36/3HELhFG1oIIqHrQjYsnUzd5y6gyEJzrEDg=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.8/go.mod h1:MYucZhH3KqdTUXHOYPDMKisvNIEuz1jQyjo63GyJqVA=
 github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAwZ/2OOE=
 github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=

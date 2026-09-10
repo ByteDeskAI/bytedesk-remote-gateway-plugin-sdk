@@ -177,7 +177,7 @@ func CoreVersionAtLeast(have, need string) bool {
 	return semver.AtLeast(have, need)
 }
 
-// The typed capability layer (common SDK v0.4.0-rc.7). Descriptors carry the
+// The typed capability layer (common SDK v0.4.0-rc.8). Descriptors carry the
 // operation name, contract revision and schema hash, so a mismatched peer is
 // rejected before anything decodes. Plugin authors reach it through this
 // module; do not import sdk-dependencies directly.

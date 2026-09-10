@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.0-rc.9] - 2026-09-10
+
+- Added optional configured agent identity fields to terminal presentation items.
+- Updated the common SDK pin to `v0.4.0-rc.8`.
+
 ## [0.4.0-rc.8] - 2026-09-10
 
 ### Added
