@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0-rc.8] - 2026-09-10
+
+### Added
+
+- `messaging` package re-exporting the common SDK's asynchronous messaging contract, so a plugin can consume it through the gateway SDK alone.
+- `ui/contracts.js`, the generated TypeScript runtime validators, added to the published `files` list. `ui/index.d.ts` has always declared `export * from './contracts.js'`; until now that resolved to the type declarations because the package was types-only.
+
+### Changed
+
+- Pinned `bytedesk-sdk-dependencies` to `v0.4.0-rc.7`, which brings the typed capability layer, per-package classification unions and `bd.schema-id.v1`.
+- Regenerated `ui/contracts.d.ts` from the newly pinned generator: byte-identical, so no consumer renegotiates.
+
+### Notes
+
+- `isRuntimeSnapshot` in `ui/index.js` deliberately shadows the generated validator of the same name. Only the local one enforces `available => installed && generation && desiredState === 'enabled'`, the invariant the gateway relies on to fail closed on optional-plugin availability. A structural validator cannot derive it.
+
 ## [0.4.0-rc.7] - 2026-09-09
 
 ### Added

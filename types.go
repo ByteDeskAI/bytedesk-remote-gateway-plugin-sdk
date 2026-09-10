@@ -1,6 +1,8 @@
 package pluginsdk
 
 import (
+	"context"
+	"encoding/json"
 	"io"
 
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/bus"
@@ -174,3 +176,92 @@ func ParseManifest(raw []byte) (Manifest, error) {
 func CoreVersionAtLeast(have, need string) bool {
 	return semver.AtLeast(have, need)
 }
+
+// The typed capability layer (common SDK v0.4.0-rc.7). Descriptors carry the
+// operation name, contract revision and schema hash, so a mismatched peer is
+// rejected before anything decodes. Plugin authors reach it through this
+// module; do not import sdk-dependencies directly.
+type (
+	Descriptor       = plugin.Descriptor
+	Registrar        = plugin.Registrar
+	Caller           = plugin.Caller
+	Fault            = plugin.Fault
+	Subscription     = plugin.Subscription
+	StatusSubscriber = plugin.StatusSubscriber
+
+	// Payload is the closed set of plugin-owned payload types. A union type
+	// set, not a marker method: embedding promotes methods, so a marker is
+	// satisfied by a wrapper that adds an unclassified field.
+	Payload = plugin.Payload
+
+	Command[Req, Resp Payload] = plugin.Command[Req, Resp]
+	Event[T Payload]           = plugin.Event[T]
+)
+
+const (
+	HeaderSchema     = plugin.HeaderSchema
+	HeaderCaller     = plugin.HeaderCaller
+	HeaderGeneration = plugin.HeaderGeneration
+	HeaderSubject    = plugin.HeaderSubject
+	HeaderFault      = plugin.HeaderFault
+
+	FaultDenied      = plugin.FaultDenied
+	FaultBudget      = plugin.FaultBudget
+	FaultWithdrawn   = plugin.FaultWithdrawn
+	FaultSchema      = plugin.FaultSchema
+	FaultUnhandled   = plugin.FaultUnhandled
+	FaultTimeout     = plugin.FaultTimeout
+	FaultUnavailable = plugin.FaultUnavailable
+)
+
+// NewDescriptor names one operation at one contract revision and schema hash.
+func NewDescriptor(name string, rev uint32, schemaHash string) Descriptor {
+	return plugin.NewDescriptor(name, rev, schemaHash)
+}
+
+// NewRegistrar returns an empty command registrar.
+func NewRegistrar() *Registrar { return plugin.NewRegistrar() }
+
+// NewCommand and NewEvent build descriptors for plugin-owned payload types.
+func NewCommand[Req, Resp Payload](name string, rev uint32, schemaHash string) Command[Req, Resp] {
+	return plugin.NewCommand[Req, Resp](name, rev, schemaHash)
+}
+
+func NewEvent[T Payload](name string, rev uint32, schemaHash string) Event[T] {
+	return plugin.NewEvent[T](name, rev, schemaHash)
+}
+
+// Invoke, Publish, Observe and HandleRaw are the untyped seam the generated
+// per-package wrappers sit on. Prefer Call/Emit/On/Handle.
+func Invoke(ctx context.Context, h Host, d Descriptor, req, resp any) error {
+	return plugin.Invoke(ctx, h, d, req, resp)
+}
+
+func Publish(h Host, d Descriptor, v any) error { return plugin.Publish(h, d, v) }
+
+func Observe(h Host, d Descriptor, fn func(json.RawMessage)) (Subscription, error) {
+	return plugin.Observe(h, d, fn)
+}
+
+func HandleRaw(r *Registrar, d Descriptor, fn func(context.Context, Caller, json.RawMessage) (json.RawMessage, error)) {
+	plugin.HandleRaw(r, d, fn)
+}
+
+// Call, Emit, On and Handle are the typed round trips. Generic functions
+// cannot be aliased, so these forward rather than re-export.
+func Call[Req, Resp Payload](ctx context.Context, h Host, c Command[Req, Resp], req Req) (Resp, error) {
+	return plugin.Call(ctx, h, c, req)
+}
+
+func Emit[T Payload](h Host, e Event[T], v T) error { return plugin.Emit(h, e, v) }
+
+func On[T Payload](h Host, e Event[T], fn func(T)) (Subscription, error) {
+	return plugin.On(h, e, fn)
+}
+
+func Handle[Req, Resp Payload](r *Registrar, c Command[Req, Resp], fn func(context.Context, Caller, Req) (Resp, error)) {
+	plugin.Handle(r, c, fn)
+}
+
+// CallerOf reads the caller identity a host stamped on an envelope.
+func CallerOf(env Envelope) Caller { return plugin.CallerOf(env) }

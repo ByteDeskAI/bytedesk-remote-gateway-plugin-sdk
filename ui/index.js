@@ -1,3 +1,9 @@
+// Generated structural validators, re-exported so the runtime module graph matches
+// index.d.ts. isRuntimeSnapshot below deliberately shadows the generated one of the
+// same name: only the local version enforces available => installed && generation &&
+// desiredState === 'enabled', the invariant the gateway relies on to fail closed.
+export * from './contracts.js'
+
 const decimal = /^(0|[1-9][0-9]*)$/
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value)
 
