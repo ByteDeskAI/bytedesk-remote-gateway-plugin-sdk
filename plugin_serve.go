@@ -108,5 +108,8 @@ func ServePlugin(ctx context.Context, p Plugin, cfg PluginConfig) (result error)
 	if httpPlugin, ok := p.(HTTPPlugin); ok {
 		cfgHTTP.Handler = httpPlugin.Handler()
 	}
+	// A spawned plugin is its own process, so the host can only profile it by
+	// asking it to profile itself (ProfileCommand).
+	cfgHTTP.Handler = withProfileCommand(cfgHTTP.Handler)
 	return ServeContext(ctx, cfgHTTP)
 }
