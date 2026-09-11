@@ -2,12 +2,130 @@ package pluginsdk
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
+
+type hookPlugin struct {
+	lifecyclePlugin
+	activations, readies atomic.Int32
+	readyErr             error
+}
+
+func (p *hookPlugin) CheckActivation(context.Context) error {
+	p.activations.Add(1)
+	return p.activationErr
+}
+func (p *hookPlugin) Ready(context.Context) error { p.readies.Add(1); return p.readyErr }
+
+// hookHost acknowledges every declared hook, or plays an older host that
+// rejects the unknown hooks field.
+type hookHost struct {
+	lifecycleHost
+	mu          sync.Mutex
+	requests    []ProtocolRequirements
+	rejectHooks bool
+}
+
+func (h *hookHost) Negotiate(_ context.Context, need ProtocolRequirements) (HostCapabilities, error) {
+	h.mu.Lock()
+	h.requests = append(h.requests, need)
+	h.mu.Unlock()
+	if h.rejectHooks && len(need.Hooks) != 0 {
+		return HostCapabilities{}, errors.New("host /negotiate: 400 Bad Request")
+	}
+	return HostCapabilities{Major: ProtocolMajor, PluginID: "sample", Generation: "g1", Hooks: need.Hooks}, nil
+}
+
+func TestServePluginLeavesAcknowledgedHooksToTheHostVerb(t *testing.T) {
+	t.Setenv(EnvID, "sample")
+	dir, err := os.MkdirTemp("", "sdk-hook-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+	sock := filepath.Join(dir, "p.sock")
+	p := &hookPlugin{lifecyclePlugin: lifecyclePlugin{activationErr: errors.New("not admitted")}, readyErr: errors.New("cache cold")}
+	host := &hookHost{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	done := make(chan error, 1)
+	go func() { done <- ServePlugin(ctx, p, PluginConfig{Socket: sock, Host: host}) }()
+	for {
+		if conn, err := net.Dial("unix", sock); err == nil {
+			conn.Close()
+			break
+		}
+		select {
+		case err := <-done:
+			t.Fatalf("exited before listening: %v", err)
+		case <-time.After(5 * time.Millisecond):
+		}
+	}
+	if p.activations.Load() != 0 || p.readies.Load() != 0 {
+		t.Fatal("acknowledged hooks also ran locally")
+	}
+	if got := host.requests[0].Hooks; !slices.Equal(got, []string{HookActivationCheck, HookReady}) {
+		t.Fatalf("advertised hooks = %v", got)
+	}
+	client := &http.Client{Transport: &http.Transport{DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
+		return (&net.Dialer{}).DialContext(ctx, "unix", sock)
+	}}}
+	call := func(hook string) (int, string) {
+		resp, err := client.Post("http://plugin/"+LifecycleHookCommand, "application/json", strings.NewReader(`{"hook":"`+hook+`"}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		var reply struct {
+			Error string `json:"error"`
+		}
+		_ = json.NewDecoder(resp.Body).Decode(&reply)
+		return resp.StatusCode, reply.Error
+	}
+	for hook, want := range map[string]string{HookActivationCheck: "not admitted", HookReady: "cache cold"} {
+		if code, reason := call(hook); code != http.StatusOK || reason != want {
+			t.Fatalf("%s = %d %q", hook, code, reason)
+		}
+	}
+	if code, _ := call("stop"); code != http.StatusNotFound {
+		t.Fatalf("undeclared hook answered %d", code)
+	}
+	if p.activations.Load() != 1 || p.readies.Load() != 1 {
+		t.Fatalf("host verb dispatch: activations=%d readies=%d", p.activations.Load(), p.readies.Load())
+	}
+	cancel()
+	if err := <-done; err != nil && !errors.Is(err, context.Canceled) {
+		t.Fatal(err)
+	}
+	if !p.stopped {
+		t.Fatal("plugin not stopped")
+	}
+}
+
+func TestServePluginRetriesWithoutHooksForAnOlderHost(t *testing.T) {
+	t.Setenv(EnvID, "sample")
+	failure := errors.New("cannot activate")
+	p := &hookPlugin{lifecyclePlugin: lifecyclePlugin{activationErr: failure, protocol: &ProtocolRequirements{Major: 1}}}
+	host := &hookHost{rejectHooks: true}
+	err := ServePlugin(context.Background(), p, PluginConfig{Socket: filepath.Join(t.TempDir(), "p.sock"), Host: host})
+	if !errors.Is(err, failure) || p.activations.Load() != 1 {
+		t.Fatalf("hooks did not run locally after fallback: err=%v activations=%d", err, p.activations.Load())
+	}
+	if len(host.requests) != 2 || len(host.requests[0].Hooks) != 2 || host.requests[1].Hooks != nil {
+		t.Fatalf("negotiation attempts = %+v", host.requests)
+	}
+}
 
 type lifecyclePlugin struct {
 	startErr, activationErr, stopErr error

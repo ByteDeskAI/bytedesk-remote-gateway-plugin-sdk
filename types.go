@@ -100,6 +100,11 @@ const (
 	FeatureRuntimeSnapshot    = plugin.FeatureRuntimeSnapshot
 	FeatureScopedHost         = plugin.FeatureScopedHost
 	FeatureActivationCheck    = plugin.FeatureActivationCheck
+	FeatureLifecycleHooks     = plugin.FeatureLifecycleHooks
+	HookActivationCheck       = plugin.HookActivationCheck
+	HookReady                 = plugin.HookReady
+	HookHealth                = plugin.HookHealth
+	LifecycleHookCommand      = plugin.LifecycleHookCommand
 	FeatureShellContributions = plugin.FeatureShellContributions
 	FeatureDocumentPaths      = plugin.FeatureDocumentPaths
 	FeatureUIModuleMount      = plugin.FeatureUIModuleMount
@@ -136,6 +141,9 @@ const (
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
 	return plugin.CheckProtocol(have, need)
 }
+
+// DeclaredHooks lists the lifecycle hooks p implements, by local assertion.
+func DeclaredHooks(p any) []string { return plugin.DeclaredHooks(p) }
 
 func ValidateDocumentPath(pattern string) error { return plugin.ValidateDocumentPath(pattern) }
 
