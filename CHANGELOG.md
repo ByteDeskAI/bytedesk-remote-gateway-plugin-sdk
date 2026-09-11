@@ -12,6 +12,7 @@
 - **Breaking:** settings section commands are `cmd.host.settings.section.v1.snapshot` and `cmd.host.settings.section.v1.patch`, following the common SDK's renamed `SettingsSectionPoint`.
 - `ServePlugin` advertises the lifecycle hooks a plugin implements and serves `POST /cmd.lifecycle.v1.hook` for those the host acknowledges, without running them locally. Against an older host that rejects the hook set, it retries negotiation without hooks and runs them locally as before.
 - Regenerated `ui/contracts.d.ts` from the combined common SDK (typed settings field schema and lifecycle hook fields).
+- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260911150628-cc6fc9b776e6` while the contract iterates untagged.
 
 ## [0.4.0-rc.9] - 2026-09-10
 
