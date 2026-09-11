@@ -6,13 +6,14 @@
 
 - `ProfileCommand` (`GET /cmd.profile.v1.cpu?seconds=N`, 1–60): every plugin served by `ServePlugin` now answers a host request to capture a CPU profile of its own process. A spawned plugin has its own Go runtime, so this is the only way the gateway can profile it (gateway TM-285). The route is a plain path check in front of the plugin's handler, so no other routing changes, and a plugin without a handler keeps `/healthz`. The `cmd.` prefix marks it host-only; the gateway refuses browser requests to `/p/<id>/cmd.*`. Untagged: iterated on a pseudo-version and released with the single EP-019 SDK tag.
 - Re-exports of the common SDK's lifecycle hook constants and `DeclaredHooks`.
+- Re-exports of the common SDK's plugin Kit: `Kit`, `NewKitFrom`, `GrantKind`, `GrantPublish`, `GrantSubscribe` and `GrantRequest`. `NewKitFrom` does not negotiate, and `Can` reads the cached grants while the host still enforces every call.
 
 ### Changed
 
 - **Breaking:** settings section commands are `cmd.host.settings.section.v1.snapshot` and `cmd.host.settings.section.v1.patch`, following the common SDK's renamed `SettingsSectionPoint`.
 - `ServePlugin` advertises the lifecycle hooks a plugin implements and serves `POST /cmd.lifecycle.v1.hook` for those the host acknowledges, without running them locally. Against an older host that rejects the hook set, it retries negotiation without hooks and runs them locally as before.
 - Regenerated `ui/contracts.d.ts` from the combined common SDK (typed settings field schema and lifecycle hook fields).
-- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260911150628-cc6fc9b776e6` while the contract iterates untagged.
+- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260911172658-7f1d072befdd` while the contract iterates untagged.
 
 ## [0.4.0-rc.9] - 2026-09-10
 

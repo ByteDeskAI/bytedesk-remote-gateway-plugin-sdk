@@ -227,6 +227,23 @@ func NewDescriptor(name string, rev uint32, schemaHash string) Descriptor {
 	return plugin.NewDescriptor(name, rev, schemaHash)
 }
 
+// Kit is the admitted Host plus the capabilities already negotiated for it (common
+// SDK TM-266). Hold it as a field; Can reads the cached grants and the host still
+// enforces every call.
+type (
+	Kit       = plugin.Kit
+	GrantKind = plugin.GrantKind
+)
+
+const (
+	GrantPublish   = plugin.GrantPublish
+	GrantSubscribe = plugin.GrantSubscribe
+	GrantRequest   = plugin.GrantRequest
+)
+
+// NewKitFrom builds a Kit from capabilities already negotiated. It does not negotiate.
+func NewKitFrom(h Host, caps HostCapabilities) *Kit { return plugin.NewKitFrom(h, caps) }
+
 // NewRegistrar returns an empty command registrar.
 func NewRegistrar() *Registrar { return plugin.NewRegistrar() }
 
