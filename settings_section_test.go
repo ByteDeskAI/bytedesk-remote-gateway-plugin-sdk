@@ -58,7 +58,8 @@ func TestSettingsSectionHandlerRefusesWhatItMust(t *testing.T) {
 		{"get is not an operation", http.MethodGet, "/" + SettingsSectionSnapshotCommand, "", http.StatusMethodNotAllowed},
 		{"read-only section", http.MethodPost, "/" + SettingsSectionPatchCommand, `{"a":1}`, http.StatusMethodNotAllowed},
 		{"patch must be an object", http.MethodPost, "/" + SettingsSectionPatchCommand, `[1,2]`, http.StatusBadRequest},
-		{"unknown command", http.MethodPost, "/cmd.settings.section.v1.delete", "", http.StatusNotFound},
+		{"unknown command", http.MethodPost, "/cmd.host.settings.section.v1.delete", "", http.StatusNotFound},
+		{"legacy bare command path", http.MethodPost, "/cmd.settings.section.v1.snapshot", "", http.StatusNotFound},
 	}
 	for _, c := range cases {
 		rec := httptest.NewRecorder()
@@ -70,9 +71,9 @@ func TestSettingsSectionHandlerRefusesWhatItMust(t *testing.T) {
 }
 
 // The wire names must match what the gateway bridge posts to:
-// "cmd." + point + ".v1." + op, with point settings.section.
+// "cmd." + point + ".v1." + op, with point host.settings.section.
 func TestSettingsSectionCommandNamesMatchTheBridge(t *testing.T) {
-	if SettingsSectionSnapshotCommand != "cmd.settings.section.v1.snapshot" || SettingsSectionPatchCommand != "cmd.settings.section.v1.patch" {
+	if SettingsSectionSnapshotCommand != "cmd.host.settings.section.v1.snapshot" || SettingsSectionPatchCommand != "cmd.host.settings.section.v1.patch" {
 		t.Fatalf("command names drifted: %s %s", SettingsSectionSnapshotCommand, SettingsSectionPatchCommand)
 	}
 }
@@ -93,7 +94,7 @@ func TestRPCHostRegisterExtensionPostsTheRegistration(t *testing.T) {
 	mux.HandleFunc("/registerExtension", func(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewDecoder(r.Body).Decode(&got)
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"id":"ext:settings.section:tmux","contributionId":"tmux"}`))
+		_, _ = w.Write([]byte(`{"id":"ext:host.settings.section:tmux","contributionId":"tmux"}`))
 	})
 	srv := &http.Server{Handler: mux}
 	go func() { _ = srv.Serve(ln) }()
@@ -104,10 +105,10 @@ func TestRPCHostRegisterExtensionPostsTheRegistration(t *testing.T) {
 		t.Fatal("the spawned-plugin host does not implement ExtensionRegistrar")
 	}
 	handle, err := reg.RegisterExtension(context.Background(), SettingsSectionPoint, "tmux", "")
-	if err != nil || handle != "ext:settings.section:tmux" {
+	if err != nil || handle != "ext:host.settings.section:tmux" {
 		t.Fatalf("handle=%q err=%v", handle, err)
 	}
-	if got["point"] != "settings.section" || got["id"] != "tmux" {
+	if got["point"] != "host.settings.section" || got["id"] != "tmux" {
 		t.Fatalf("registration body: %v", got)
 	}
 }
