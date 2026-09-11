@@ -335,6 +335,27 @@ type HostStarter interface {
 	Start(ctx context.Context) error
 }
 
+// ExtensionRegistrar is implemented by the spawned-plugin Host. RegisterExtension
+// asks the host to admit a live provider at an extension point the plugin
+// declared in Manifest.Implements. The host decides: the point must be open to
+// the bridge, declared in the admitted manifest, and consented to by the
+// operator for an installed plugin. The returned handle withdraws the provider
+// through the host's /cancel verb.
+type ExtensionRegistrar interface {
+	RegisterExtension(ctx context.Context, point, id, providerID string) (handle string, err error)
+}
+
+func (h *rpcHost) RegisterExtension(ctx context.Context, point, id, providerID string) (string, error) {
+	var reply struct {
+		ID string `json:"id"`
+	}
+	body := map[string]string{"point": point, "id": id, "providerId": providerID}
+	if err := h.post(ctx, "/registerExtension", body, &reply); err != nil {
+		return "", err
+	}
+	return reply.ID, nil
+}
+
 // HostCloser is implemented by a Host holding resources worth releasing.
 type HostCloser interface {
 	Close()

@@ -56,6 +56,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Settings sections for spawned plugins.** `SettingsSection`, `SettingsSectionHTTPHandler` and `MountSettingsSection` let a plugin serve `cmd.settings.section.v1.snapshot` and `cmd.settings.section.v1.patch` on its own socket, which the gateway bridges onto its settings API. `SettingsSectionPoint` re-exports the common SDK constant. A PATCH body is bounded at 64 KiB, a read-only section returns `ErrSettingsReadOnly` and is answered 405, and any method but POST is refused.
+- **`ExtensionRegistrar`.** The spawned-plugin host implements `RegisterExtension(ctx, point, id, providerID)`, which asks the host to admit a live provider at a point the plugin declared in `Manifest.Implements`. The host still decides: the point must be open to the bridge, declared in the admitted manifest, and consented to for an installed plugin.
+
+### Changed
+
+- Consumes `bytedesk-sdk-dependencies` by pseudo-version (`v0.4.0-rc.8.0.20260911022014-d1fb318b7a44`) while the contract iterates untagged, and regenerates `ui/contracts.d.ts` from it (adds `Config` and `ConfigSection`).
+
+
 ## [0.4.0-rc.2] - 2026-09-08
 
 ### Added
