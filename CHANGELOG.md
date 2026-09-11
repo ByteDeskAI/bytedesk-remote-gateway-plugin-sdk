@@ -10,10 +10,11 @@
 
 ### Changed
 
+- **Breaking:** UI contribution slots name a role, following the common SDK (gateway ADR 0026 D1, TM-255). `SlotToolbar`, `SlotOverlay` and `SlotBadge` are removed. `SlotMainNavigation`, `SlotSubNavigation`, `SlotPrimaryAction`, `SlotSecondaryActions`, `SlotStatusIndicator`, `SlotObjectActions` and `SlotLauncher` are re-exported. To migrate, replace `toolbar` with `primary-action` and `badge` with `status-indicator`. `overlay` has no replacement.
 - **Breaking:** settings section commands are `cmd.host.settings.section.v1.snapshot` and `cmd.host.settings.section.v1.patch`, following the common SDK's renamed `SettingsSectionPoint`.
 - `ServePlugin` advertises the lifecycle hooks a plugin implements and serves `POST /cmd.lifecycle.v1.hook` for those the host acknowledges, without running them locally. Against an older host that rejects the hook set, it retries negotiation without hooks and runs them locally as before.
 - Regenerated `ui/contracts.d.ts` from the combined common SDK (typed settings field schema and lifecycle hook fields).
-- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260911172658-7f1d072befdd` while the contract iterates untagged.
+- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260911203920-e272c6f2f093` while the contract iterates untagged.
 
 ## [0.4.0-rc.9] - 2026-09-10
 

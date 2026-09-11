@@ -116,9 +116,13 @@ const (
 	OperationCompleted        = plugin.OperationCompleted
 	OperationFailed           = plugin.OperationFailed
 	SlotDefaultView           = plugin.SlotDefaultView
-	SlotToolbar               = plugin.SlotToolbar
-	SlotOverlay               = plugin.SlotOverlay
-	SlotBadge                 = plugin.SlotBadge
+	SlotMainNavigation        = plugin.SlotMainNavigation
+	SlotSubNavigation         = plugin.SlotSubNavigation
+	SlotPrimaryAction         = plugin.SlotPrimaryAction
+	SlotSecondaryActions      = plugin.SlotSecondaryActions
+	SlotStatusIndicator       = plugin.SlotStatusIndicator
+	SlotObjectActions         = plugin.SlotObjectActions
+	SlotLauncher              = plugin.SlotLauncher
 	SlotSettings              = plugin.SlotSettings
 	SlotCommand               = plugin.SlotCommand
 
