@@ -248,6 +248,20 @@ const (
 // NewKitFrom builds a Kit from capabilities already negotiated. It does not negotiate.
 func NewKitFrom(h Host, caps HostCapabilities) *Kit { return plugin.NewKitFrom(h, caps) }
 
+// Optional interfaces that sit beside Host and Plugin (common SDK TM-268).
+// Host's method set is pinned, so these arrive alongside it: type-assert for
+// what you want, and an older host simply does not implement it.
+//
+// ObservableRegistrar makes a refused Subscribe or Every visible, Draining runs
+// before the host revokes the generation and may not veto, and DataVersioned
+// records which version last wrote this plugin's state dir.
+type (
+	ObservableRegistrar = plugin.ObservableRegistrar
+	Draining            = plugin.Draining
+	DataVersioned       = plugin.DataVersioned
+	DataVersion         = plugin.DataVersion
+)
+
 // NewRegistrar returns an empty command registrar.
 func NewRegistrar() *Registrar { return plugin.NewRegistrar() }
 
