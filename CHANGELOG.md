@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.11] - 2026-09-13
+
+### Added
+
+- Re-exports the common SDK's asynchronous, paged `cmd.desktop-applications.v2.scan` contract, generated browser declarations and structural validator. The v1 scan contract remains available unchanged (gateway TM-331).
+
+### Changed
+
+- Pins `bytedesk-sdk-dependencies` `v0.4.0-rc.10`.
+
 ## [0.4.0-rc.10] - 2026-09-13
 
 ### Added

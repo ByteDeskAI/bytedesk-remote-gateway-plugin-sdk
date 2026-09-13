@@ -79,6 +79,8 @@ type (
 	DesktopApplicationsStatusResult        = plugin.DesktopApplicationsStatusResult
 	DesktopApplicationsScanRequest         = plugin.DesktopApplicationsScanRequest
 	DesktopApplicationsScanResult          = plugin.DesktopApplicationsScanResult
+	DesktopApplicationsScanV2Request       = plugin.DesktopApplicationsScanV2Request
+	DesktopApplicationsScanV2Result        = plugin.DesktopApplicationsScanV2Result
 	DesktopApplicationsRegisterRequest     = plugin.DesktopApplicationsRegisterRequest
 	DesktopApplicationsRegisterResult      = plugin.DesktopApplicationsRegisterResult
 	DesktopApplicationsOpenRequest         = plugin.DesktopApplicationsOpenRequest
@@ -164,18 +166,25 @@ const (
 	DesktopApplicationsContractRevision    = plugin.DesktopApplicationsContractRevision
 	DesktopApplicationsStatusCommand       = plugin.DesktopApplicationsStatusCommand
 	DesktopApplicationsScanCommand         = plugin.DesktopApplicationsScanCommand
+	DesktopApplicationsScanV2Command       = plugin.DesktopApplicationsScanV2Command
 	DesktopApplicationsRegisterCommand     = plugin.DesktopApplicationsRegisterCommand
 	DesktopApplicationsOpenCommand         = plugin.DesktopApplicationsOpenCommand
 	DesktopApplicationsRefreshCommand      = plugin.DesktopApplicationsRefreshCommand
 	DesktopApplicationsViewerTicketCommand = plugin.DesktopApplicationsViewerTicketCommand
 	DesktopApplicationsQuitCommand         = plugin.DesktopApplicationsQuitCommand
 	DesktopApplicationsMaxBytes            = plugin.DesktopApplicationsMaxBytes
+	DesktopApplicationsScanV2MaxBytes      = plugin.DesktopApplicationsScanV2MaxBytes
+	DesktopApplicationsScanV2DefaultLimit  = plugin.DesktopApplicationsScanV2DefaultLimit
+	DesktopApplicationsScanV2MaxLimit      = plugin.DesktopApplicationsScanV2MaxLimit
 	DesktopApplicationKindDesktop          = plugin.DesktopApplicationKindDesktop
 	DesktopApplicationKindBundle           = plugin.DesktopApplicationKindBundle
 	DesktopApplicationKindBinary           = plugin.DesktopApplicationKindBinary
 	DesktopApplicationReady                = plugin.DesktopApplicationReady
 	DesktopApplicationMissing              = plugin.DesktopApplicationMissing
 	DesktopApplicationInvalid              = plugin.DesktopApplicationInvalid
+	DesktopApplicationsScanV2Scanning      = plugin.DesktopApplicationsScanV2Scanning
+	DesktopApplicationsScanV2Complete      = plugin.DesktopApplicationsScanV2Complete
+	DesktopApplicationsScanV2Failed        = plugin.DesktopApplicationsScanV2Failed
 	DesktopSessionStarting                 = plugin.DesktopSessionStarting
 	DesktopSessionReady                    = plugin.DesktopSessionReady
 	DesktopSessionChooseWindow             = plugin.DesktopSessionChooseWindow
@@ -185,6 +194,7 @@ const (
 var (
 	CmdDesktopApplicationsStatus       = plugin.CmdDesktopApplicationsStatus
 	CmdDesktopApplicationsScan         = plugin.CmdDesktopApplicationsScan
+	CmdDesktopApplicationsScanV2       = plugin.CmdDesktopApplicationsScanV2
 	CmdDesktopApplicationsRegister     = plugin.CmdDesktopApplicationsRegister
 	CmdDesktopApplicationsOpen         = plugin.CmdDesktopApplicationsOpen
 	CmdDesktopApplicationsRefresh      = plugin.CmdDesktopApplicationsRefresh

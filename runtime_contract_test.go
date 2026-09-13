@@ -66,6 +66,9 @@ func TestDesktopApplicationsContractComesFromPinnedCommonSDK(t *testing.T) {
 	if CmdDesktopApplicationsScan.Name() != DesktopApplicationsScanCommand || CmdDesktopApplicationsOpen.Name() != DesktopApplicationsOpenCommand {
 		t.Fatal("desktop applications descriptors drifted from common SDK")
 	}
+	if CmdDesktopApplicationsScanV2.Name() != "cmd.desktop-applications.v2.scan" || CmdDesktopApplicationsScanV2.Name() != DesktopApplicationsScanV2Command {
+		t.Fatal("desktop applications v2 scan descriptor drifted from common SDK")
+	}
 	app := DesktopApplication{
 		ID:                   "claude-desktop",
 		Name:                 "Claude Desktop",
@@ -84,6 +87,20 @@ func TestDesktopApplicationsContractComesFromPinnedCommonSDK(t *testing.T) {
 		Status: DesktopApplicationReady, InstalledAtEstimated: true,
 	}).Validate(); err == nil {
 		t.Fatal("gateway SDK alias accepted estimated install metadata without an install time")
+	}
+	if err := (DesktopApplicationsScanV2Request{ScanID: "scan-1", Cursor: "page-2", Limit: DesktopApplicationsScanV2DefaultLimit}).Validate(); err != nil {
+		t.Fatalf("gateway SDK v2 request alias: %v", err)
+	}
+	if err := desktopApplicationsScanV2ResultForTest(app).Validate(); err != nil {
+		t.Fatalf("gateway SDK v2 result alias: %v", err)
+	}
+}
+
+func desktopApplicationsScanV2ResultForTest(app DesktopApplication) DesktopApplicationsScanV2Result {
+	return DesktopApplicationsScanV2Result{
+		ScanID: "scan-1", State: DesktopApplicationsScanV2Complete,
+		Revision: "revision-1", ScannedAt: "2026-09-13T16:00:00Z",
+		Total: 1, Applications: []DesktopApplication{app},
 	}
 }
 
