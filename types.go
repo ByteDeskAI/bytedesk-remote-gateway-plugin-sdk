@@ -70,6 +70,25 @@ type (
 	PresentationItem             = plugin.PresentationItem
 	PresentationResult           = plugin.PresentationResult
 	TerminalPresentationProvider = plugin.TerminalPresentationProvider
+
+	DesktopSessionStatus                   = plugin.DesktopSessionStatus
+	DesktopApplication                     = plugin.DesktopApplication
+	DesktopApplicationWindow               = plugin.DesktopApplicationWindow
+	DesktopApplicationSession              = plugin.DesktopApplicationSession
+	DesktopApplicationsStatusRequest       = plugin.DesktopApplicationsStatusRequest
+	DesktopApplicationsStatusResult        = plugin.DesktopApplicationsStatusResult
+	DesktopApplicationsScanRequest         = plugin.DesktopApplicationsScanRequest
+	DesktopApplicationsScanResult          = plugin.DesktopApplicationsScanResult
+	DesktopApplicationsRegisterRequest     = plugin.DesktopApplicationsRegisterRequest
+	DesktopApplicationsRegisterResult      = plugin.DesktopApplicationsRegisterResult
+	DesktopApplicationsOpenRequest         = plugin.DesktopApplicationsOpenRequest
+	DesktopApplicationsOpenResult          = plugin.DesktopApplicationsOpenResult
+	DesktopApplicationsRefreshRequest      = plugin.DesktopApplicationsRefreshRequest
+	DesktopApplicationsRefreshResult       = plugin.DesktopApplicationsRefreshResult
+	DesktopApplicationsViewerTicketRequest = plugin.DesktopApplicationsViewerTicketRequest
+	DesktopApplicationsViewerTicketResult  = plugin.DesktopApplicationsViewerTicketResult
+	DesktopApplicationsQuitRequest         = plugin.DesktopApplicationsQuitRequest
+	DesktopApplicationsQuitResult          = plugin.DesktopApplicationsQuitResult
 )
 
 const (
@@ -140,6 +159,37 @@ const (
 	FreshnessFresh                   = plugin.FreshnessFresh
 	FreshnessStale                   = plugin.FreshnessStale
 	FreshnessUnknown                 = plugin.FreshnessUnknown
+
+	DesktopApplicationsService             = plugin.DesktopApplicationsService
+	DesktopApplicationsContractRevision    = plugin.DesktopApplicationsContractRevision
+	DesktopApplicationsStatusCommand       = plugin.DesktopApplicationsStatusCommand
+	DesktopApplicationsScanCommand         = plugin.DesktopApplicationsScanCommand
+	DesktopApplicationsRegisterCommand     = plugin.DesktopApplicationsRegisterCommand
+	DesktopApplicationsOpenCommand         = plugin.DesktopApplicationsOpenCommand
+	DesktopApplicationsRefreshCommand      = plugin.DesktopApplicationsRefreshCommand
+	DesktopApplicationsViewerTicketCommand = plugin.DesktopApplicationsViewerTicketCommand
+	DesktopApplicationsQuitCommand         = plugin.DesktopApplicationsQuitCommand
+	DesktopApplicationsMaxBytes            = plugin.DesktopApplicationsMaxBytes
+	DesktopApplicationKindDesktop          = plugin.DesktopApplicationKindDesktop
+	DesktopApplicationKindBundle           = plugin.DesktopApplicationKindBundle
+	DesktopApplicationKindBinary           = plugin.DesktopApplicationKindBinary
+	DesktopApplicationReady                = plugin.DesktopApplicationReady
+	DesktopApplicationMissing              = plugin.DesktopApplicationMissing
+	DesktopApplicationInvalid              = plugin.DesktopApplicationInvalid
+	DesktopSessionStarting                 = plugin.DesktopSessionStarting
+	DesktopSessionReady                    = plugin.DesktopSessionReady
+	DesktopSessionChooseWindow             = plugin.DesktopSessionChooseWindow
+	DesktopSessionUnavailable              = plugin.DesktopSessionUnavailable
+)
+
+var (
+	CmdDesktopApplicationsStatus       = plugin.CmdDesktopApplicationsStatus
+	CmdDesktopApplicationsScan         = plugin.CmdDesktopApplicationsScan
+	CmdDesktopApplicationsRegister     = plugin.CmdDesktopApplicationsRegister
+	CmdDesktopApplicationsOpen         = plugin.CmdDesktopApplicationsOpen
+	CmdDesktopApplicationsRefresh      = plugin.CmdDesktopApplicationsRefresh
+	CmdDesktopApplicationsViewerTicket = plugin.CmdDesktopApplicationsViewerTicket
+	CmdDesktopApplicationsQuit         = plugin.CmdDesktopApplicationsQuit
 )
 
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {

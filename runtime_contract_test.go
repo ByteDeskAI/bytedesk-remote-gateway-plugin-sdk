@@ -59,6 +59,18 @@ func TestTerminalPresentationHelpersReexportCommonContract(t *testing.T) {
 	}
 }
 
+func TestDesktopApplicationsContractComesFromPinnedCommonSDK(t *testing.T) {
+	if DesktopApplicationsService != "desktop-applications" || DesktopApplicationsContractRevision != 1 {
+		t.Fatalf("desktop applications identity = %q revision %d", DesktopApplicationsService, DesktopApplicationsContractRevision)
+	}
+	if CmdDesktopApplicationsScan.Name() != DesktopApplicationsScanCommand || CmdDesktopApplicationsOpen.Name() != DesktopApplicationsOpenCommand {
+		t.Fatal("desktop applications descriptors drifted from common SDK")
+	}
+	if err := (DesktopApplication{ID: "claude-desktop", Name: "Claude Desktop", Kind: DesktopApplicationKindDesktop, Status: DesktopApplicationReady}).Validate(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestDocumentHelpersReexportCommonContract(t *testing.T) {
 	if err := ValidateDocumentPath("/files/*path"); err != nil {
 		t.Fatal(err)
