@@ -8,6 +8,176 @@ const num = (v) => typeof v === 'number' && Number.isFinite(v)
 const dec = (v) => str(v) && decimal.test(v)
 const list = (v, of) => Array.isArray(v) && v.every(of)
 
+export function isBinding(value) {
+  if (!record(value)) return false
+  if (!(str(value.kind))) return false
+  if (!(str(value.event))) return false
+  if (!(value.field === undefined || str(value.field))) return false
+  return true
+}
+
+export function isConfig(value) {
+  if (!record(value)) return false
+  if (!(value.sections === undefined || list(value.sections, isConfigSection))) return false
+  return true
+}
+
+export function isConfigField(value) {
+  if (!record(value)) return false
+  if (!(str(value.key))) return false
+  if (!(str(value.kind))) return false
+  if (!(value.label === undefined || str(value.label))) return false
+  if (!(value.description === undefined || str(value.description))) return false
+  if (!(value.default === undefined || str(value.default))) return false
+  if (!(value.min === undefined || num(value.min))) return false
+  if (!(value.max === undefined || num(value.max))) return false
+  if (!(value.nullable === undefined || bool(value.nullable))) return false
+  if (!(value.choices === undefined || list(value.choices, str))) return false
+  if (!(value.readOnly === undefined || bool(value.readOnly))) return false
+  if (!(value.requiresRestart === undefined || bool(value.requiresRestart))) return false
+  return true
+}
+
+export function isConfigSection(value) {
+  if (!record(value)) return false
+  if (!(str(value.id))) return false
+  if (!(value.title === undefined || str(value.title))) return false
+  if (!(value.description === undefined || str(value.description))) return false
+  if (!(value.fields === undefined || list(value.fields, isConfigField))) return false
+  return true
+}
+
+export function isDesktopApplication(value) {
+  if (!record(value)) return false
+  if (!(str(value.id))) return false
+  if (!(str(value.name))) return false
+  if (!(str(value.kind))) return false
+  if (!(value.preset === undefined || str(value.preset))) return false
+  if (!(str(value.status))) return false
+  if (!(value.error === undefined || str(value.error))) return false
+  if (!(value.manual === undefined || bool(value.manual))) return false
+  if (!(value.revision === undefined || str(value.revision))) return false
+  if (!(value.iconUrl === undefined || str(value.iconUrl))) return false
+  if (!(value.launcherPath === undefined || str(value.launcherPath))) return false
+  if (!(value.installedAt === undefined || str(value.installedAt))) return false
+  if (!(value.installedAtEstimated === undefined || bool(value.installedAtEstimated))) return false
+  return true
+}
+
+export function isDesktopApplicationSession(value) {
+  if (!record(value)) return false
+  if (!(str(value.id))) return false
+  if (!(str(value.applicationId))) return false
+  if (!(str(value.name))) return false
+  if (!(str(value.state))) return false
+  if (!(value.windows === null || list(value.windows, isDesktopApplicationWindow))) return false
+  if (!(str(value.viewerUrl))) return false
+  if (!(value.error === undefined || str(value.error))) return false
+  return true
+}
+
+export function isDesktopApplicationWindow(value) {
+  if (!record(value)) return false
+  if (!(str(value.id))) return false
+  if (!(str(value.title))) return false
+  return true
+}
+
+export function isDesktopApplicationsOpenRequest(value) {
+  if (!record(value)) return false
+  if (!(str(value.applicationId))) return false
+  if (!(value.windowId === undefined || str(value.windowId))) return false
+  return true
+}
+
+export function isDesktopApplicationsOpenResult(value) {
+  if (!record(value)) return false
+  if (!(isDesktopApplicationSession(value.session))) return false
+  return true
+}
+
+export function isDesktopApplicationsQuitRequest(value) {
+  if (!record(value)) return false
+  if (!(str(value.sessionId))) return false
+  return true
+}
+
+export function isDesktopApplicationsQuitResult(value) {
+  if (!record(value)) return false
+  if (!(bool(value.ok))) return false
+  return true
+}
+
+export function isDesktopApplicationsRefreshRequest(value) {
+  if (!record(value)) return false
+  if (!(str(value.sessionId))) return false
+  return true
+}
+
+export function isDesktopApplicationsRefreshResult(value) {
+  if (!record(value)) return false
+  if (!(isDesktopApplicationSession(value.session))) return false
+  return true
+}
+
+export function isDesktopApplicationsRegisterRequest(value) {
+  if (!record(value)) return false
+  if (!(value.applicationId === undefined || str(value.applicationId))) return false
+  if (!(str(value.name))) return false
+  if (!(str(value.path))) return false
+  return true
+}
+
+export function isDesktopApplicationsRegisterResult(value) {
+  if (!record(value)) return false
+  if (!(isDesktopApplication(value.application))) return false
+  return true
+}
+
+export function isDesktopApplicationsScanRequest(value) {
+  if (!record(value)) return false
+  return true
+}
+
+export function isDesktopApplicationsScanResult(value) {
+  if (!record(value)) return false
+  if (!(isDesktopSessionStatus(value.desktop))) return false
+  if (!(value.applications === null || list(value.applications, isDesktopApplication))) return false
+  return true
+}
+
+export function isDesktopApplicationsStatusRequest(value) {
+  if (!record(value)) return false
+  return true
+}
+
+export function isDesktopApplicationsStatusResult(value) {
+  if (!record(value)) return false
+  if (!(isDesktopSessionStatus(value.desktop))) return false
+  return true
+}
+
+export function isDesktopApplicationsViewerTicketRequest(value) {
+  if (!record(value)) return false
+  if (!(str(value.sessionId))) return false
+  if (!(str(value.origin))) return false
+  return true
+}
+
+export function isDesktopApplicationsViewerTicketResult(value) {
+  if (!record(value)) return false
+  if (!(str(value.ticket))) return false
+  if (!(num(value.expiresIn))) return false
+  return true
+}
+
+export function isDesktopSessionStatus(value) {
+  if (!record(value)) return false
+  if (!(bool(value.available))) return false
+  if (!(str(value.message))) return false
+  return true
+}
+
 export function isExtensionPoint(value) {
   if (!record(value)) return false
   if (!(str(value.name))) return false
@@ -37,6 +207,7 @@ export function isHostCapabilities(value) {
   if (!(str(value.pluginId))) return false
   if (!(str(value.generation))) return false
   if (!(isPermissions(value.grants))) return false
+  if (!(value.hooks === undefined || list(value.hooks, str))) return false
   return true
 }
 
@@ -69,6 +240,7 @@ export function isManifest(value) {
   if (!(value.launchers === undefined || list(value.launchers, isLauncherSpec))) return false
   if (!(value.scopes === undefined || list(value.scopes, str))) return false
   if (!(value.routes === undefined || list(value.routes, str))) return false
+  if (!(value.publicRoutes === undefined || list(value.publicRoutes, str))) return false
   if (!(value.spawn === undefined || bool(value.spawn))) return false
   if (!(value.binary === undefined || str(value.binary))) return false
   if (!(value.socket === undefined || str(value.socket))) return false
@@ -88,6 +260,7 @@ export function isManifest(value) {
   if (!(value.protocol === undefined || isProtocolRequirements(value.protocol))) return false
   if (!(value.permissions === undefined || isPermissions(value.permissions))) return false
   if (!(value.ui === undefined || list(value.ui, isUIContribution))) return false
+  if (!(value.config === undefined || isConfig(value.config))) return false
   return true
 }
 
@@ -191,6 +364,7 @@ export function isProtocolRequirements(value) {
   if (!record(value)) return false
   if (!(num(value.major))) return false
   if (!(value.required === undefined || list(value.required, str))) return false
+  if (!(value.hooks === undefined || list(value.hooks, str))) return false
   return true
 }
 
@@ -265,6 +439,7 @@ export function isUIContribution(value) {
   if (!(value.label === undefined || str(value.label))) return false
   if (!(value.icon === undefined || str(value.icon))) return false
   if (!(value.priority === undefined || num(value.priority))) return false
+  if (!(value.bindings === undefined || list(value.bindings, isBinding))) return false
   return true
 }
 

@@ -66,8 +66,24 @@ func TestDesktopApplicationsContractComesFromPinnedCommonSDK(t *testing.T) {
 	if CmdDesktopApplicationsScan.Name() != DesktopApplicationsScanCommand || CmdDesktopApplicationsOpen.Name() != DesktopApplicationsOpenCommand {
 		t.Fatal("desktop applications descriptors drifted from common SDK")
 	}
-	if err := (DesktopApplication{ID: "claude-desktop", Name: "Claude Desktop", Kind: DesktopApplicationKindDesktop, Status: DesktopApplicationReady}).Validate(); err != nil {
+	app := DesktopApplication{
+		ID:                   "claude-desktop",
+		Name:                 "Claude Desktop",
+		Kind:                 DesktopApplicationKindDesktop,
+		Status:               DesktopApplicationReady,
+		IconURL:              "/api/plugins/applications/icons/claude-desktop",
+		LauncherPath:         "/usr/share/applications/claude.desktop",
+		InstalledAt:          "2026-09-12T18:30:00Z",
+		InstalledAtEstimated: true,
+	}
+	if err := app.Validate(); err != nil {
 		t.Fatal(err)
+	}
+	if err := (DesktopApplication{
+		ID: "claude-desktop", Name: "Claude Desktop", Kind: DesktopApplicationKindDesktop,
+		Status: DesktopApplicationReady, InstalledAtEstimated: true,
+	}).Validate(); err == nil {
+		t.Fatal("gateway SDK alias accepted estimated install metadata without an install time")
 	}
 }
 
