@@ -54,3 +54,16 @@ export const componentContributeCommand: 'components.contribute.v1'
 export function availableComponents(host: Pick<PluginUIHost, 'request'>): Promise<readonly ComponentIdentity[]>
 export function assignComponent(host: Pick<PluginUIHost, 'request'>, identity: ComponentIdentity): Promise<ComponentAssignment>
 export function contributeComponent(host: Pick<PluginUIHost, 'request'>, assignment: ComponentAssignment, extension: Omit<import('./contracts.js').ComponentExtension, 'ownerId' | 'generation'>): Promise<import('./contracts.js').ComponentExtension>
+
+/** Typed browser refinements of the common SDK's raw transport envelopes. */
+export interface ComponentSnapshotResult<F extends ComponentFamily> {
+ readonly identity: ComponentIdentity & {readonly family: F}
+ readonly revision: number
+ readonly snapshot: ComponentSnapshotMap[F]
+ readonly capabilities: readonly (keyof ComponentMethodsMap[F])[]
+}
+export type ComponentChanged<F extends ComponentFamily> = {
+ readonly identity: ComponentIdentity & {readonly family: F}
+ readonly lease: string
+ readonly revision: number
+} & ({ readonly withdrawn: true } | { readonly withdrawn?: false; readonly snapshot: ComponentSnapshotMap[F] })
