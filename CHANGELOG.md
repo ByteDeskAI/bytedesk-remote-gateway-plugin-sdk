@@ -8,6 +8,7 @@
 
 ### Fixed
 
+- Verify generated browser JavaScript against the pinned common SDK alongside TypeScript declarations, so validator drift fails the SDK test gate.
 - Synchronize lifecycle negotiation test recorder reads with its existing mutex. This removes a race in test bookkeeping without changing plugin lifecycle behavior.
 
 ## [0.4.0-rc.11] - 2026-09-13

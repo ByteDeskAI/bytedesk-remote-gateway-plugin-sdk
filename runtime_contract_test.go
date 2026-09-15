@@ -131,6 +131,20 @@ func TestBrowserDeclarationsComeFromPinnedCommonSDK(t *testing.T) {
 	}
 }
 
+func TestBrowserJavaScriptComesFromPinnedCommonSDK(t *testing.T) {
+	generated, err := exec.Command("go", "run", "github.com/ByteDeskAI/bytedesk-sdk-dependencies/cmd/plugin-typescript", "-emit", "js").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	actual, err := os.ReadFile("ui/contracts.js")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(actual, generated) {
+		t.Fatal("ui/contracts.js drifted from the pinned common SDK")
+	}
+}
+
 func TestRPCNegotiationDoesNotGrantUnsupportedFeatures(t *testing.T) {
 	for _, tc := range []struct {
 		name     string
