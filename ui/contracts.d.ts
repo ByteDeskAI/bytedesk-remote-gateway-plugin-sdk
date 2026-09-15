@@ -20,6 +20,8 @@ export interface ConfigField {
   max?: number
   nullable?: boolean
   choices?: string[]
+  point?: string
+  requires?: string[]
   readOnly?: boolean
   requiresRestart?: boolean
 }
@@ -42,6 +44,7 @@ export interface DesktopApplication {
   revision?: string
   iconUrl?: string
   launcherPath?: string
+  executablePath?: string
   installedAt?: string
   installedAtEstimated?: boolean
 }

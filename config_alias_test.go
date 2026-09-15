@@ -76,3 +76,45 @@ func TestConfigFieldsForwardingMatchesCommonSDK(t *testing.T) {
 		})
 	}
 }
+
+func TestProviderConfigAliasesMatchCommonSDK(t *testing.T) {
+	if sdk.ConfigKindProvider != plugin.ConfigKindProvider {
+		t.Fatal("provider kind differs from common SDK")
+	}
+	for _, tc := range []struct {
+		tag   string
+		valid bool
+	}{
+		{"provider=host.data.store,requires=transactions|blobs", true},
+		{"requires=transactions|blobs,provider=host.data.store", true},
+		{"requires=transactions", false},
+		{"provider=host.*", false},
+		{"provider=host.data.store,requires=a|a", false},
+		{"provider=host.data.store,enum=x", false},
+		{"enum=x,provider=host.data.store", false},
+		{"secret,provider=host.data.store", false},
+		{"provider=host.data.store,secret", false},
+	} {
+		t.Run(tc.tag, func(t *testing.T) {
+			typ := reflect.StructOf([]reflect.StructField{{Name: "Store", Type: reflect.TypeOf(""), Tag: reflect.StructTag(`json:"store" config:"` + tc.tag + `"`)}})
+			input := reflect.New(typ).Interface()
+			got, err := sdk.ConfigFieldsFromStruct(input)
+			want, wantErr := plugin.ConfigFieldsFromStruct(input)
+			if (err == nil) != tc.valid || (err == nil) != (wantErr == nil) {
+				t.Fatalf("valid=%v errors=%v/%v", tc.valid, err, wantErr)
+			}
+			if err != nil {
+				if err.Error() != wantErr.Error() {
+					t.Fatalf("validation errors differ: %v/%v", err, wantErr)
+				}
+				return
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Fatalf("fields differ: %#v/%#v", got, want)
+			}
+			if len(got) != 1 || got[0].Kind != sdk.ConfigKindProvider || got[0].Point != "host.data.store" || !reflect.DeepEqual(got[0].Requires, []string{"transactions", "blobs"}) {
+				t.Fatalf("provider metadata lost: %#v", got)
+			}
+		})
+	}
+}

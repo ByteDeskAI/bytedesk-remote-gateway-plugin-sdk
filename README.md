@@ -27,6 +27,22 @@ need not match. Bump this repo when the gateway SDK changes. Bump the
 
 Vault plugins use `bytedesk-vault-sdk` (same inherited Manifest, `VAULT_PLUGIN_*`).
 
+## Provider settings and role eligibility
+
+Use `ManifestConfig`, `ConfigSection`, `ConfigField` and `ConfigKindProvider`
+to declare provider settings. `Config` still configures the server. A provider
+field's `Point` and `Requires` describe eligible choices; the host resolves the
+live registry, validates and persists the exact selection, and switches providers.
+
+`ContributionRoles`, `ContributionRoleFor` and `ContributionRoleAllowed`
+forward the common SDK's role policy. The host must supply trusted compiled
+provenance and explicit per-point consent. Unknown roles fail closed; these
+helpers neither collect consent nor grant runtime authority themselves.
+
+Version 0.4.0-rc.12 adopts common SDK 0.4.0-rc.11. Its resolved Applications
+executable path changes scan and registration schema hashes. Upgrade the host
+and affected plugins together; JSON optionality does not preserve those hashes.
+
 ## Live contracts prerelease
 
 Version 0.4 re-exports the common runtime model and optional `ActivationChecker`/`Negotiator`. Call `Negotiate` before using any required protocol feature; an older host that lacks the endpoint fails the negotiation instead of silently granting a capability. Existing `Host`/`Plugin` methods and callers remain compatible. Protocol support and granted authority are distinct.

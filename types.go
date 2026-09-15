@@ -23,9 +23,11 @@ type (
 	Envelope     = bus.Envelope
 
 	// ManifestConfig describes settings, unlike Config, which configures Serve.
-	ManifestConfig = plugin.Config
-	ConfigSection  = plugin.ConfigSection
-	ConfigField    = plugin.ConfigField
+	ManifestConfig          = plugin.Config
+	ConfigSection           = plugin.ConfigSection
+	ConfigField             = plugin.ConfigField
+	ContributionEligibility = plugin.ContributionEligibility
+	ContributionRole        = plugin.ContributionRole
 
 	// Composition and extension points. The host resolves all of these: it
 	// expands a family and starts the matching member, and it mediates every
@@ -110,6 +112,11 @@ const (
 	ConfigKindStringList = plugin.ConfigKindStringList
 	ConfigKindEnum       = plugin.ConfigKindEnum
 	ConfigKindSecret     = plugin.ConfigKindSecret
+	ConfigKindProvider   = plugin.ConfigKindProvider
+
+	ContributionInstalledAllowed = plugin.ContributionInstalledAllowed
+	ContributionConsentRequired  = plugin.ContributionConsentRequired
+	ContributionCompiledOnly     = plugin.ContributionCompiledOnly
 
 	// Lifecycle states a host announces on the bus as a plugin moves through
 	// them. Subscribe to learn that you are ready, that a peer arrived, or that
@@ -222,6 +229,24 @@ func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
 // and validation. It does not read or persist configuration values.
 func ConfigFieldsFromStruct(v any) ([]ConfigField, error) {
 	return plugin.ConfigFieldsFromStruct(v)
+}
+
+// ContributionRoles returns the canonical role vocabulary and admission policy
+// in a fresh slice that callers may inspect without changing shared policy.
+func ContributionRoles() []ContributionRole { return plugin.ContributionRoles() }
+
+// ContributionRoleFor looks up an exact canonical role.
+func ContributionRoleFor(slot string) (ContributionRole, bool) {
+	return plugin.ContributionRoleFor(slot)
+}
+
+// ContributionRoleAllowed checks admission, not execution permissions. Inputs
+// must be host-owned: compiledIn is verified build provenance, not Manifest.Role
+// or a signature; pointConsent is an explicit grant for this plugin and role,
+// not broad module trust. Hosts must re-evaluate on revocation. Unknown roles
+// fail closed even for compiled-in code.
+func ContributionRoleAllowed(slot string, compiledIn, pointConsent bool) bool {
+	return plugin.ContributionRoleAllowed(slot, compiledIn, pointConsent)
 }
 
 // DeclaredHooks lists the lifecycle hooks p implements, by local assertion.

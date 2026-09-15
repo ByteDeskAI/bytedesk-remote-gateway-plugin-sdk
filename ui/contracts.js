@@ -33,6 +33,8 @@ export function isConfigField(value) {
   if (!(value.max === undefined || num(value.max))) return false
   if (!(value.nullable === undefined || bool(value.nullable))) return false
   if (!(value.choices === undefined || list(value.choices, str))) return false
+  if (!(value.point === undefined || str(value.point))) return false
+  if (!(value.requires === undefined || list(value.requires, str))) return false
   if (!(value.readOnly === undefined || bool(value.readOnly))) return false
   if (!(value.requiresRestart === undefined || bool(value.requiresRestart))) return false
   return true
@@ -59,6 +61,7 @@ export function isDesktopApplication(value) {
   if (!(value.revision === undefined || str(value.revision))) return false
   if (!(value.iconUrl === undefined || str(value.iconUrl))) return false
   if (!(value.launcherPath === undefined || str(value.launcherPath))) return false
+  if (!(value.executablePath === undefined || str(value.executablePath))) return false
   if (!(value.installedAt === undefined || str(value.installedAt))) return false
   if (!(value.installedAtEstimated === undefined || bool(value.installedAtEstimated))) return false
   return true

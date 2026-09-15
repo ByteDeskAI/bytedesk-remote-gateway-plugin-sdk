@@ -2,11 +2,18 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.12] - 2026-09-15
+
 ### Added
 
-- Re-export existing manifest settings types as `ManifestConfig`, `ConfigSection` and `ConfigField`, their six existing kind constants, and `ConfigFieldsFromStruct`. `Config` remains the server configuration type. This preparatory slice does not yet expose the new provider kind or role eligibility contract.
+- Re-export manifest settings types as `ManifestConfig`, `ConfigSection` and `ConfigField`, all seven kind constants including `ConfigKindProvider`, and `ConfigFieldsFromStruct`. `Config` remains the server configuration type. Provider declarations name an extension point and required capabilities; the host owns registry resolution and selection validation.
+- Re-export canonical contribution-role eligibility types, constants and lookup/authorization helpers. The host supplies compiled provenance and explicit per-point consent; declarations alone never grant either.
 
 - **Host-attested external HTTP origin (gateway TM-331).** `HeaderExternalOrigin` and `ExternalOrigin` read exactly one canonical HTTP/HTTPS origin from the authenticated private host transport. They reject ambiguous or malformed values and never fall back to client forwarding headers. The host must strip client copies and stamp its validated origin; this helper alone neither authenticates a request nor enables a LAN-origin fallback.
+
+### Changed
+
+- Adopt released common SDK `v0.4.0-rc.11` and regenerate both browser contract files. Applications scan and registration schema hashes change with the subject-classified resolved executable path; coordinate host and plugin adoption rather than assuming optional JSON fields preserve typed-schema compatibility.
 
 ### Fixed
 
