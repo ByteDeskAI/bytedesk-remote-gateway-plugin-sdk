@@ -4,12 +4,17 @@
 
 ### Added
 
+- **Host-attested external HTTP origin (gateway TM-331).** `HeaderExternalOrigin` and `ExternalOrigin` read exactly one canonical HTTP/HTTPS origin from the authenticated private host transport. They reject ambiguous or malformed values and never fall back to client forwarding headers. The host must strip client copies and stamp its validated origin; this helper alone neither authenticates a request nor enables a LAN-origin fallback.
 - Re-exports the common SDK's typed `desktop-applications` host-service commands, payloads and generated TypeScript contract for contained Applications consumers (gateway TM-326).
 
 - `ProfileCommand` (`GET /cmd.profile.v1.cpu?seconds=N`, 1–60): every plugin served by `ServePlugin` now answers a host request to capture a CPU profile of its own process. A spawned plugin has its own Go runtime, so this is the only way the gateway can profile it (gateway TM-285). The route is a plain path check in front of the plugin's handler, so no other routing changes, and a plugin without a handler keeps `/healthz`. The `cmd.` prefix marks it host-only; the gateway refuses browser requests to `/p/<id>/cmd.*`. Untagged: iterated on a pseudo-version and released with the single EP-019 SDK tag.
 - Re-exports of the common SDK's lifecycle hook constants and `DeclaredHooks`.
 - Re-exports of the common SDK's plugin Kit: `Kit`, `NewKitFrom`, `GrantKind`, `GrantPublish`, `GrantSubscribe` and `GrantRequest`. `NewKitFrom` does not negotiate, and `Can` reads the cached grants while the host still enforces every call.
 - Re-exports of the common SDK's optional interfaces, which sit beside `Host` and `Plugin` rather than extending either: `ObservableRegistrar` (`SubscribeErr`, `EveryErr`) makes a refused registration visible instead of silent, `Draining` (`OnDrain`) runs while the bus, timers and state dir still work and may not veto teardown, and `DataVersioned` plus `DataVersion` record which version last wrote this plugin's state dir. Type-assert for what you need; an older host does not implement them and the plugin keeps running.
+
+### Fixed
+
+- Synchronize lifecycle negotiation test recorder reads with its existing mutex. This removes a race in test bookkeeping without changing plugin lifecycle behavior.
 
 ### Changed
 
