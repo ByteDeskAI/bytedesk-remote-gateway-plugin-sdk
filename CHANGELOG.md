@@ -5,6 +5,26 @@
 ### Added
 
 - **Host-attested external HTTP origin (gateway TM-331).** `HeaderExternalOrigin` and `ExternalOrigin` read exactly one canonical HTTP/HTTPS origin from the authenticated private host transport. They reject ambiguous or malformed values and never fall back to client forwarding headers. The host must strip client copies and stamp its validated origin; this helper alone neither authenticates a request nor enables a LAN-origin fallback.
+
+### Fixed
+
+- Synchronize lifecycle negotiation test recorder reads with its existing mutex. This removes a race in test bookkeeping without changing plugin lifecycle behavior.
+
+## [0.4.0-rc.11] - 2026-09-13
+
+### Added
+
+- Re-exports the common SDK's asynchronous, paged `cmd.desktop-applications.v2.scan` contract, generated browser declarations and structural validator. The v1 scan contract remains available unchanged (gateway TM-331).
+
+### Changed
+
+- Pins `bytedesk-sdk-dependencies` `v0.4.0-rc.10`.
+
+## [0.4.0-rc.10] - 2026-09-13
+
+### Added
+
+- Re-exports Applications catalog metadata from `bytedesk-sdk-dependencies` `v0.4.0-rc.9`: optional launcher path, RFC3339 install time, estimated-time marker, and icon URL in both Go and generated browser contracts (gateway TM-331).
 - Re-exports the common SDK's typed `desktop-applications` host-service commands, payloads and generated TypeScript contract for contained Applications consumers (gateway TM-326).
 
 - `ProfileCommand` (`GET /cmd.profile.v1.cpu?seconds=N`, 1–60): every plugin served by `ServePlugin` now answers a host request to capture a CPU profile of its own process. A spawned plugin has its own Go runtime, so this is the only way the gateway can profile it (gateway TM-285). The route is a plain path check in front of the plugin's handler, so no other routing changes, and a plugin without a handler keeps `/healthz`. The `cmd.` prefix marks it host-only; the gateway refuses browser requests to `/p/<id>/cmd.*`. Untagged: iterated on a pseudo-version and released with the single EP-019 SDK tag.
@@ -12,17 +32,13 @@
 - Re-exports of the common SDK's plugin Kit: `Kit`, `NewKitFrom`, `GrantKind`, `GrantPublish`, `GrantSubscribe` and `GrantRequest`. `NewKitFrom` does not negotiate, and `Can` reads the cached grants while the host still enforces every call.
 - Re-exports of the common SDK's optional interfaces, which sit beside `Host` and `Plugin` rather than extending either: `ObservableRegistrar` (`SubscribeErr`, `EveryErr`) makes a refused registration visible instead of silent, `Draining` (`OnDrain`) runs while the bus, timers and state dir still work and may not veto teardown, and `DataVersioned` plus `DataVersion` record which version last wrote this plugin's state dir. Type-assert for what you need; an older host does not implement them and the plugin keeps running.
 
-### Fixed
-
-- Synchronize lifecycle negotiation test recorder reads with its existing mutex. This removes a race in test bookkeeping without changing plugin lifecycle behavior.
-
 ### Changed
 
 - **Breaking:** UI contribution slots name a role, following the common SDK (gateway ADR 0026 D1, TM-255). `SlotToolbar`, `SlotOverlay` and `SlotBadge` are removed. `SlotMainNavigation`, `SlotSubNavigation`, `SlotPrimaryAction`, `SlotSecondaryActions`, `SlotStatusIndicator`, `SlotObjectActions` and `SlotLauncher` are re-exported. To migrate, replace `toolbar` with `primary-action` and `badge` with `status-indicator`. `overlay` has no replacement.
 - **Breaking:** settings section commands are `cmd.host.settings.section.v1.snapshot` and `cmd.host.settings.section.v1.patch`, following the common SDK's renamed `SettingsSectionPoint`.
 - `ServePlugin` advertises the lifecycle hooks a plugin implements and serves `POST /cmd.lifecycle.v1.hook` for those the host acknowledges, without running them locally. Against an older host that rejects the hook set, it retries negotiation without hooks and runs them locally as before.
 - Regenerated `ui/contracts.d.ts` from the combined common SDK (typed settings field schema and lifecycle hook fields).
-- Consumes `bytedesk-sdk-dependencies` by pseudo-version `v0.4.0-rc.8.0.20260912011527-0af154410449` while the contract iterates untagged.
+- Pins the released `bytedesk-sdk-dependencies` `v0.4.0-rc.9` contract.
 
 ## [0.4.0-rc.9] - 2026-09-10
 
