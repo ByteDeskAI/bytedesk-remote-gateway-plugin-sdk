@@ -4,6 +4,8 @@
 
 ### Added
 
+- Re-export existing manifest settings types as `ManifestConfig`, `ConfigSection` and `ConfigField`, their six existing kind constants, and `ConfigFieldsFromStruct`. `Config` remains the server configuration type. This preparatory slice does not yet expose the new provider kind or role eligibility contract.
+
 - **Host-attested external HTTP origin (gateway TM-331).** `HeaderExternalOrigin` and `ExternalOrigin` read exactly one canonical HTTP/HTTPS origin from the authenticated private host transport. They reject ambiguous or malformed values and never fall back to client forwarding headers. The host must strip client copies and stamp its validated origin; this helper alone neither authenticates a request nor enables a LAN-origin fallback.
 
 ### Fixed

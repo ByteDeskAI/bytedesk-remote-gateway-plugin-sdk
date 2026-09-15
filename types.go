@@ -22,6 +22,11 @@ type (
 	Requirement  = plugin.Requirement
 	Envelope     = bus.Envelope
 
+	// ManifestConfig describes settings, unlike Config, which configures Serve.
+	ManifestConfig = plugin.Config
+	ConfigSection  = plugin.ConfigSection
+	ConfigField    = plugin.ConfigField
+
 	// Composition and extension points. The host resolves all of these: it
 	// expands a family and starts the matching member, and it mediates every
 	// provider registration. A plugin never loads, execs or proxies another.
@@ -98,6 +103,13 @@ const (
 	TargetVault   = plugin.TargetVault
 	RoleSystem    = plugin.RoleSystem
 	RoleExtension = plugin.RoleExtension
+
+	ConfigKindBool       = plugin.ConfigKindBool
+	ConfigKindInt        = plugin.ConfigKindInt
+	ConfigKindString     = plugin.ConfigKindString
+	ConfigKindStringList = plugin.ConfigKindStringList
+	ConfigKindEnum       = plugin.ConfigKindEnum
+	ConfigKindSecret     = plugin.ConfigKindSecret
 
 	// Lifecycle states a host announces on the bus as a plugin moves through
 	// them. Subscribe to learn that you are ready, that a peer arrived, or that
@@ -204,6 +216,12 @@ var (
 
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
 	return plugin.CheckProtocol(have, need)
+}
+
+// ConfigFieldsFromStruct derives settings fields using the common SDK's tags
+// and validation. It does not read or persist configuration values.
+func ConfigFieldsFromStruct(v any) ([]ConfigField, error) {
+	return plugin.ConfigFieldsFromStruct(v)
 }
 
 // DeclaredHooks lists the lifecycle hooks p implements, by local assertion.
