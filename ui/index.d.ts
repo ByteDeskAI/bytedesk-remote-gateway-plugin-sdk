@@ -43,3 +43,5 @@ export interface PluginUIHost {
 export interface PluginUIModule {
   mount(element: HTMLElement, host: PluginUIHost): (() => void) | Promise<() => void>
 }
+
+export * from "./components.js"

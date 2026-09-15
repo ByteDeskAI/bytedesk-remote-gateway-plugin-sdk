@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.13] - 2026-09-15
+
+### Added
+
+- Framework-independent component controllers, readonly typed handles, selective subscriptions and disposal for eight core component families. Optional named methods advertise only implemented capabilities.
+- Assigned component clients over the negotiated UI host, with exact identity checks, structural snapshot validation, withdrawal cleanup and explicit host-issued leases. Additive contribution helpers preserve host-owned contributor identity; no DOM, renderer or terminal I/O is exposed.
+
 ## [0.4.0-rc.12] - 2026-09-15
 
 ### Added

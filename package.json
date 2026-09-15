@@ -1,6 +1,6 @@
 {
   "name": "@bytedesk/gateway-plugin-ui",
-  "version": "0.4.0-rc.12",
+  "version": "0.4.0-rc.13",
   "type": "module",
   "description": "Portable Gateway plugin UI contracts and runtime snapshot validation",
   "exports": {
@@ -14,7 +14,9 @@
     "ui/index.d.ts",
     "ui/contracts.d.ts",
     "ui/contracts.js",
-    "README.md"
+    "README.md",
+    "ui/components.js",
+    "ui/components.d.ts"
   ],
   "scripts": {
     "test": "node --test ui/*.test.js"
