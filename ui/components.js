@@ -79,27 +79,42 @@ export async function connectComponent(host, assignment) {
  if (typeof assignment.lease !== 'string' || !assignment.lease) throw new TypeError('Host-issued component assignment required')
  const target = immutable(assignment)
  if (host.signal.aborted) throw new Error('Component host disposed')
- // Subscribe before reading so a concurrent update cannot be lost.
- let controller, queued = [], closed = false
- const unsubscribe = host.subscribe(componentChangedEvent, event => {
-  if (!sameIdentity(event?.identity,target.identity) || event?.lease !== target.lease || closed) return
-  if (!controller) queued.push(event)
-  else if (event.withdrawn) dispose()
-  else { try { controller.update(event.snapshot) } catch { dispose() } }
- })
+ // Subscribe before reading; monotonic host revisions resolve cross-channel races.
+ let controller, queued = [], closed = false, revision = -1, unsubscribe = () => {}
+ const validRevision = value => Number.isSafeInteger(value) && value >= 0
  const dispose = () => { if (closed) return; closed=true; unsubscribe(); controller?.dispose(); host.signal.removeEventListener('abort',dispose) }
+ const apply = event => {
+  if (event.withdrawn) { dispose(); return }
+  if (!validRevision(event.revision)) { dispose(); throw new TypeError('Invalid component revision') }
+  if (event.revision <= revision) return
+  controller.update(event.snapshot)
+  revision = event.revision
+ }
+ unsubscribe = host.subscribe(componentChangedEvent, event => {
+  if (!sameIdentity(event?.identity,target.identity) || event?.lease !== target.lease || closed) return
+  if (!controller) queued.push(immutable(event))
+  else { try { apply(event) } catch { dispose() } }
+ })
  host.signal.addEventListener('abort',dispose,{once:true})
  try {
+  if (host.signal.aborted) { dispose(); throw new Error('Component host disposed') }
   const result = await host.request(componentSnapshotCommand,{assignment:target})
   if (closed || host.signal.aborted) throw new Error('Component host disposed')
   if (!sameIdentity(result?.identity,target.identity) || !Array.isArray(result.capabilities)) throw new TypeError('Component response identity mismatch')
+  if (!validRevision(result.revision)) throw new TypeError('Invalid component revision')
+  revision = result.revision
   const methods = {}
   for (const name of result.capabilities) {
    if (!methodsByFamily[target.identity.family].includes(name)) throw new TypeError('Unsupported component capability')
    methods[name] = (...args) => host.request(componentInvokeCommand,{assignment:target,method:name,args})
   }
   controller = createComponentController({identity:target.identity,snapshot:result.snapshot,methods,signal:host.signal})
-  for (const event of queued) { if (event.withdrawn) { dispose(); break } controller.update(event.snapshot) }
+  if (queued.some(event => event.withdrawn)) dispose()
+  else {
+   if (queued.some(event => !validRevision(event.revision))) throw new TypeError('Invalid component revision')
+   queued.sort((a,b) => a.revision - b.revision)
+   for (const event of queued) apply(event)
+  }
   queued = []
   if (closed) throw new Error('Component assignment withdrawn')
   return Object.freeze({...controller.handle,dispose})

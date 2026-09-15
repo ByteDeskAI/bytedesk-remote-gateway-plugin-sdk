@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.14] - 2026-09-15
+
+### Fixed
+
+- Assigned component clients validate host revisions and ignore stale or duplicate change events, including events racing the first snapshot read. Invalid revisions withdraw clients; queued withdrawal and host cancellation retain cleanup guarantees.
+
 ## [0.4.0-rc.13] - 2026-09-15
 
 ### Added
