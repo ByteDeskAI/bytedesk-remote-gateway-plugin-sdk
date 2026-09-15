@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Allocate active Unix-socket test fixtures in short private directories so the complete suite also runs under long CI temporary paths. Verify permissions and cleanup without changing production transport.
+
 - Verify generated browser JavaScript against the pinned common SDK alongside TypeScript declarations, so validator drift fails the SDK test gate.
 - Synchronize lifecycle negotiation test recorder reads with its existing mutex. This removes a race in test bookkeeping without changing plugin lifecycle behavior.
 

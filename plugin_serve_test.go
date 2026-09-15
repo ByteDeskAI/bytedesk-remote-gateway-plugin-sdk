@@ -49,12 +49,7 @@ func (h *hookHost) Negotiate(_ context.Context, need ProtocolRequirements) (Host
 
 func TestServePluginLeavesAcknowledgedHooksToTheHostVerb(t *testing.T) {
 	t.Setenv(EnvID, "sample")
-	dir, err := os.MkdirTemp("", "sdk-hook-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(dir)
-	sock := filepath.Join(dir, "p.sock")
+	sock := shortUnixSocketPath(t)
 	p := &hookPlugin{lifecyclePlugin: lifecyclePlugin{activationErr: errors.New("not admitted")}, readyErr: errors.New("cache cold")}
 	host := &hookHost{}
 	ctx, cancel := context.WithCancel(context.Background())

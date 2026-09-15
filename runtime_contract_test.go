@@ -160,7 +160,7 @@ func TestRPCNegotiationDoesNotGrantUnsupportedFeatures(t *testing.T) {
 		{"denied", 1, nil, 403, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			socket := filepath.Join(t.TempDir(), "host.sock")
+			socket := shortUnixSocketPath(t)
 			listener, err := net.Listen("unix", socket)
 			if err != nil {
 				t.Fatal(err)
