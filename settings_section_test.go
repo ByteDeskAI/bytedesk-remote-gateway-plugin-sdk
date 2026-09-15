@@ -7,8 +7,6 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -79,12 +77,7 @@ func TestSettingsSectionCommandNamesMatchTheBridge(t *testing.T) {
 }
 
 func TestRPCHostRegisterExtensionPostsTheRegistration(t *testing.T) {
-	dir, err := os.MkdirTemp("", "pr")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = os.RemoveAll(dir) })
-	sock := filepath.Join(dir, "h.sock")
+	sock := shortUnixSocketPath(t)
 	ln, err := net.Listen("unix", sock)
 	if err != nil {
 		t.Fatal(err)

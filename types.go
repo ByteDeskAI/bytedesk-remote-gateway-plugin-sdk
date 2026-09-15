@@ -22,6 +22,13 @@ type (
 	Requirement  = plugin.Requirement
 	Envelope     = bus.Envelope
 
+	// ManifestConfig describes settings, unlike Config, which configures Serve.
+	ManifestConfig          = plugin.Config
+	ConfigSection           = plugin.ConfigSection
+	ConfigField             = plugin.ConfigField
+	ContributionEligibility = plugin.ContributionEligibility
+	ContributionRole        = plugin.ContributionRole
+
 	// Composition and extension points. The host resolves all of these: it
 	// expands a family and starts the matching member, and it mediates every
 	// provider registration. A plugin never loads, execs or proxies another.
@@ -79,6 +86,8 @@ type (
 	DesktopApplicationsStatusResult        = plugin.DesktopApplicationsStatusResult
 	DesktopApplicationsScanRequest         = plugin.DesktopApplicationsScanRequest
 	DesktopApplicationsScanResult          = plugin.DesktopApplicationsScanResult
+	DesktopApplicationsScanV2Request       = plugin.DesktopApplicationsScanV2Request
+	DesktopApplicationsScanV2Result        = plugin.DesktopApplicationsScanV2Result
 	DesktopApplicationsRegisterRequest     = plugin.DesktopApplicationsRegisterRequest
 	DesktopApplicationsRegisterResult      = plugin.DesktopApplicationsRegisterResult
 	DesktopApplicationsOpenRequest         = plugin.DesktopApplicationsOpenRequest
@@ -96,6 +105,18 @@ const (
 	TargetVault   = plugin.TargetVault
 	RoleSystem    = plugin.RoleSystem
 	RoleExtension = plugin.RoleExtension
+
+	ConfigKindBool       = plugin.ConfigKindBool
+	ConfigKindInt        = plugin.ConfigKindInt
+	ConfigKindString     = plugin.ConfigKindString
+	ConfigKindStringList = plugin.ConfigKindStringList
+	ConfigKindEnum       = plugin.ConfigKindEnum
+	ConfigKindSecret     = plugin.ConfigKindSecret
+	ConfigKindProvider   = plugin.ConfigKindProvider
+
+	ContributionInstalledAllowed = plugin.ContributionInstalledAllowed
+	ContributionConsentRequired  = plugin.ContributionConsentRequired
+	ContributionCompiledOnly     = plugin.ContributionCompiledOnly
 
 	// Lifecycle states a host announces on the bus as a plugin moves through
 	// them. Subscribe to learn that you are ready, that a peer arrived, or that
@@ -164,18 +185,25 @@ const (
 	DesktopApplicationsContractRevision    = plugin.DesktopApplicationsContractRevision
 	DesktopApplicationsStatusCommand       = plugin.DesktopApplicationsStatusCommand
 	DesktopApplicationsScanCommand         = plugin.DesktopApplicationsScanCommand
+	DesktopApplicationsScanV2Command       = plugin.DesktopApplicationsScanV2Command
 	DesktopApplicationsRegisterCommand     = plugin.DesktopApplicationsRegisterCommand
 	DesktopApplicationsOpenCommand         = plugin.DesktopApplicationsOpenCommand
 	DesktopApplicationsRefreshCommand      = plugin.DesktopApplicationsRefreshCommand
 	DesktopApplicationsViewerTicketCommand = plugin.DesktopApplicationsViewerTicketCommand
 	DesktopApplicationsQuitCommand         = plugin.DesktopApplicationsQuitCommand
 	DesktopApplicationsMaxBytes            = plugin.DesktopApplicationsMaxBytes
+	DesktopApplicationsScanV2MaxBytes      = plugin.DesktopApplicationsScanV2MaxBytes
+	DesktopApplicationsScanV2DefaultLimit  = plugin.DesktopApplicationsScanV2DefaultLimit
+	DesktopApplicationsScanV2MaxLimit      = plugin.DesktopApplicationsScanV2MaxLimit
 	DesktopApplicationKindDesktop          = plugin.DesktopApplicationKindDesktop
 	DesktopApplicationKindBundle           = plugin.DesktopApplicationKindBundle
 	DesktopApplicationKindBinary           = plugin.DesktopApplicationKindBinary
 	DesktopApplicationReady                = plugin.DesktopApplicationReady
 	DesktopApplicationMissing              = plugin.DesktopApplicationMissing
 	DesktopApplicationInvalid              = plugin.DesktopApplicationInvalid
+	DesktopApplicationsScanV2Scanning      = plugin.DesktopApplicationsScanV2Scanning
+	DesktopApplicationsScanV2Complete      = plugin.DesktopApplicationsScanV2Complete
+	DesktopApplicationsScanV2Failed        = plugin.DesktopApplicationsScanV2Failed
 	DesktopSessionStarting                 = plugin.DesktopSessionStarting
 	DesktopSessionReady                    = plugin.DesktopSessionReady
 	DesktopSessionChooseWindow             = plugin.DesktopSessionChooseWindow
@@ -185,6 +213,7 @@ const (
 var (
 	CmdDesktopApplicationsStatus       = plugin.CmdDesktopApplicationsStatus
 	CmdDesktopApplicationsScan         = plugin.CmdDesktopApplicationsScan
+	CmdDesktopApplicationsScanV2       = plugin.CmdDesktopApplicationsScanV2
 	CmdDesktopApplicationsRegister     = plugin.CmdDesktopApplicationsRegister
 	CmdDesktopApplicationsOpen         = plugin.CmdDesktopApplicationsOpen
 	CmdDesktopApplicationsRefresh      = plugin.CmdDesktopApplicationsRefresh
@@ -194,6 +223,30 @@ var (
 
 func CheckProtocol(have HostCapabilities, need ProtocolRequirements) error {
 	return plugin.CheckProtocol(have, need)
+}
+
+// ConfigFieldsFromStruct derives settings fields using the common SDK's tags
+// and validation. It does not read or persist configuration values.
+func ConfigFieldsFromStruct(v any) ([]ConfigField, error) {
+	return plugin.ConfigFieldsFromStruct(v)
+}
+
+// ContributionRoles returns the canonical role vocabulary and admission policy
+// in a fresh slice that callers may inspect without changing shared policy.
+func ContributionRoles() []ContributionRole { return plugin.ContributionRoles() }
+
+// ContributionRoleFor looks up an exact canonical role.
+func ContributionRoleFor(slot string) (ContributionRole, bool) {
+	return plugin.ContributionRoleFor(slot)
+}
+
+// ContributionRoleAllowed checks admission, not execution permissions. Inputs
+// must be host-owned: compiledIn is verified build provenance, not Manifest.Role
+// or a signature; pointConsent is an explicit grant for this plugin and role,
+// not broad module trust. Hosts must re-evaluate on revocation. Unknown roles
+// fail closed even for compiled-in code.
+func ContributionRoleAllowed(slot string, compiledIn, pointConsent bool) bool {
+	return plugin.ContributionRoleAllowed(slot, compiledIn, pointConsent)
 }
 
 // DeclaredHooks lists the lifecycle hooks p implements, by local assertion.

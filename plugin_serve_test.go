@@ -49,12 +49,7 @@ func (h *hookHost) Negotiate(_ context.Context, need ProtocolRequirements) (Host
 
 func TestServePluginLeavesAcknowledgedHooksToTheHostVerb(t *testing.T) {
 	t.Setenv(EnvID, "sample")
-	dir, err := os.MkdirTemp("", "sdk-hook-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(dir)
-	sock := filepath.Join(dir, "p.sock")
+	sock := shortUnixSocketPath(t)
 	p := &hookPlugin{lifecyclePlugin: lifecyclePlugin{activationErr: errors.New("not admitted")}, readyErr: errors.New("cache cold")}
 	host := &hookHost{}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -75,7 +70,20 @@ func TestServePluginLeavesAcknowledgedHooksToTheHostVerb(t *testing.T) {
 	if p.activations.Load() != 0 || p.readies.Load() != 0 {
 		t.Fatal("acknowledged hooks also ran locally")
 	}
-	if got := host.requests[0].Hooks; !slices.Equal(got, []string{HookActivationCheck, HookReady}) {
+	// A successful socket dial is not a Go memory synchronization boundary.
+	// Read the recorder under the same mutex used by Negotiate, and copy its
+	// slice before asserting outside the lock.
+	host.mu.Lock()
+	requestCount := len(host.requests)
+	var advertisedHooks []string
+	if requestCount > 0 {
+		advertisedHooks = slices.Clone(host.requests[0].Hooks)
+	}
+	host.mu.Unlock()
+	if requestCount != 1 {
+		t.Fatalf("negotiation request count = %d, want 1", requestCount)
+	}
+	if got := advertisedHooks; !slices.Equal(got, []string{HookActivationCheck, HookReady}) {
 		t.Fatalf("advertised hooks = %v", got)
 	}
 	client := &http.Client{Transport: &http.Transport{DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {

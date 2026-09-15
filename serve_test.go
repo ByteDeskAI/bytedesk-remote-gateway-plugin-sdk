@@ -5,13 +5,12 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestServeHealthz(t *testing.T) {
-	sock := filepath.Join(t.TempDir(), "plugin.sock")
+	sock := shortUnixSocketPath(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	errCh := make(chan error, 1)
