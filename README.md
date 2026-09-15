@@ -115,3 +115,24 @@ from common SDK v0.4.0-rc.4. Hosts must check version compatibility alongside ru
 availability; empty constraints preserve legacy versions. Range syntax and prerelease
 behavior are documented by the common SDK. This adds a pinned semantic-version parser
 through the common dependency, without extending Host or Plugin methods.
+
+### Component controllers and assigned clients
+
+`createComponentController` is framework-independent. The application owns backing state and supplies named supported methods; `update` publishes a validated immutable snapshot. `handle.getSnapshot()` is referentially stable until an update changes data. `subscribe(listener)` supports external-store adapters; `subscribe(selector, listener)` limits notification to a selected value. Method names absent from the adapter are absent from the handle and its capability list. Dispose controllers when the mounted instance is removed, not when its view is merely hidden.
+
+```js
+import { createComponentController, connectComponent } from '@bytedesk/gateway-plugin-ui'
+const controller = createComponentController({
+  identity: { id: 'tasks:project-one', family: 'tasks', ownerId: 'projects', generation: '1', projectId: 'project-one' },
+  snapshot: { available: true, running: false, href: '', starting: false, error: '' },
+  methods: { start: async () => { /* call the existing authorized service */ } },
+})
+const unsubscribe = controller.handle.subscribe(s => s.running, running => console.log(running))
+// On removal: unsubscribe(); controller.dispose()
+```
+
+For plugins, call `connectComponent(host, assignment)` only after the operator explicitly connects a host-issued `{ identity, lease }` assignment. The helper uses `components.snapshot.v1`, `components.invoke.v1` and `components.changed.v1` through the negotiated host. The host checks lease, owner, mounted generation and supported method on every request. Snapshot responses contain `{identity, snapshot, capabilities}`. Change events contain `{identity, lease, snapshot}`; withdrawal uses `{identity, lease, withdrawn: true}`. Invocation carries `{assignment, method, args}` with the named method's positional arguments. This browser protocol does not itself issue authority or bypass backend checks.
+
+Handles expose no DOM, React, xterm instance or terminal input/output. Snapshots are serializable readonly values; controllers never persist data themselves. Existing adapters decide which state is saved. The host signal and explicit disposal invalidate clients and remove subscriptions.
+
+Session launches take `{kind, cwd?, count?, isolate?}` and use the existing server launch validator. File-tree mutation methods take paths relative to that tree's registered root; the host must enforce root confinement and existing file-action permissions. `availableComponents` only lists permitted targets. `assignComponent` asks the host for an operator-approved lease; it cannot silently grant itself a component. `contributeComponent` omits contributor ownership from its input: the host stamps the admitted owner and generation and removes contributions on withdrawal.
