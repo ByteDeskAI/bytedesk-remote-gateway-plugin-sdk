@@ -96,6 +96,24 @@ func TestDesktopApplicationsContractComesFromPinnedCommonSDK(t *testing.T) {
 	}
 }
 
+func TestTmuxReadContractComesFromPinnedCommonSDK(t *testing.T) {
+	if TmuxService != "tmux" || TmuxContractRevision != 1 {
+		t.Fatalf("tmux identity = %q revision %d", TmuxService, TmuxContractRevision)
+	}
+	if CmdTmuxAvailability.Name() != TmuxAvailabilityCommand ||
+		CmdTmuxSessions.Name() != TmuxSessionsCommand ||
+		CmdTmuxWindows.Name() != TmuxWindowsCommand ||
+		CmdTmuxPanes.Name() != TmuxPanesCommand {
+		t.Fatal("tmux descriptors drifted from common SDK")
+	}
+	if err := (TmuxAvailabilityResult{Tmux: TmuxAvailability{State: TmuxStateOK, Version: "3.5a", Message: "available"}}).Validate(); err != nil {
+		t.Fatal(err)
+	}
+	if err := (TmuxPanesResult{Output: "session\t0\t0\tzsh\t/work\t123\t1\t0\t0\ttitle"}).Validate(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func desktopApplicationsScanV2ResultForTest(app DesktopApplication) DesktopApplicationsScanV2Result {
 	return DesktopApplicationsScanV2Result{
 		ScanID: "scan-1", State: DesktopApplicationsScanV2Complete,

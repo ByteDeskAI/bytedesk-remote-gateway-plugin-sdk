@@ -141,6 +141,62 @@ type lifecyclePlugin struct {
 	protocol                         *ProtocolRequirements
 }
 
+type subjectHTTPPlugin struct {
+	lifecyclePlugin
+	handler http.Handler
+}
+
+func (p *subjectHTTPPlugin) Handler() http.Handler { return p.handler }
+
+func TestServePluginCarriesHostSubjectLeaseIntoHTTPPluginContext(t *testing.T) {
+	t.Setenv(EnvID, "sample")
+	sock := shortUnixSocketPath(t)
+	seen := make(chan string, 1)
+	p := &subjectHTTPPlugin{handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lease, err := SubjectLeaseFromContext(r.Context())
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		seen <- lease
+		w.WriteHeader(http.StatusNoContent)
+	})}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	done := make(chan error, 1)
+	go func() { done <- ServePlugin(ctx, p, PluginConfig{Socket: sock, Host: lifecycleHost{}}) }()
+	client := &http.Client{Transport: &http.Transport{DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
+		return (&net.Dialer{}).DialContext(ctx, "unix", sock)
+	}}}
+	var resp *http.Response
+	for deadline := time.Now().Add(time.Second); time.Now().Before(deadline); {
+		req, err := http.NewRequest(http.MethodGet, "http://plugin/plugin", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set(HeaderSubjectLease, testSubjectLease)
+		resp, err = client.Do(req)
+		if err == nil {
+			break
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	if resp == nil {
+		t.Fatal("plugin did not listen")
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("status = %d", resp.StatusCode)
+	}
+	if got := <-seen; got != testSubjectLease {
+		t.Fatalf("handler lease = %q", got)
+	}
+	cancel()
+	if err := <-done; err != nil && !errors.Is(err, context.Canceled) {
+		t.Fatal(err)
+	}
+}
+
 func (*lifecyclePlugin) ID() string                              { return "sample" }
 func (p *lifecyclePlugin) Manifest() Manifest                    { return Manifest{ID: p.ID(), Protocol: p.protocol} }
 func (p *lifecyclePlugin) Start(context.Context, Host) error     { p.started = true; return p.startErr }

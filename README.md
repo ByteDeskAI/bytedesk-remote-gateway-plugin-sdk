@@ -70,6 +70,37 @@ stamps the private plugin transport. Missing or invalid headers preserve the
 ordinary logger, so plugins remain compatible with older hosts. Correlation is
 diagnostic metadata and never grants authority.
 
+### Subject-scoped host requests
+
+The gateway stamps `HeaderSubjectLease` only on its private HTTP transport after
+removing every client-supplied copy. `ServePlugin` places that transport value
+in the `HTTPPlugin` request context. A plugin passes the same context to
+`Host.Request`; the spawned host adapter forwards the value only on `/request`
+and never serializes it into the bus envelope:
+
+```go
+func (p *plugin) Handler() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        result, err := p.host.Request(r.Context(), request)
+        // handle result and err
+    })
+}
+```
+
+`SubjectLeaseFromContext` lets a handler distinguish an older host, which has
+no lease and retains autonomous behavior, from `ErrInvalidSubjectLease`, which
+means a present private header was malformed or ambiguous and must be refused.
+The lease is an opaque host-owned identifier. Plugins must not parse, mint,
+persist or place it in their own JSON. A lease does not grant authority by
+itself: the host resolves it and applies plugin generation, consent, audience,
+expiry and revocation checks on every subject-scoped request.
+
+The tmux read descriptors (`CmdTmuxAvailability`, `CmdTmuxSessions`,
+`CmdTmuxWindows` and `CmdTmuxPanes`) come from the pinned common SDK. Inventory
+results are subject-classified, size-bounded strings produced only with the
+fixed exported tmux formats. Plugins cannot supply tmux arguments, targets or
+formats through these contracts.
+
 ### Terminal presentation owner dispatch
 
 `terminal.presentation.v1` is inherited from common SDK v0.4.0-rc.6. A host may

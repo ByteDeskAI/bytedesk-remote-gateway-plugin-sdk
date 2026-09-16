@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.16] - 2026-09-15
+
+### Added
+
+- Carry one host-minted subject lease from a spawned plugin's private HTTP request context to `Host.Request` through `X-Bytedesk-Subject-Lease`. The lease is never added to the bus envelope or forwarded by publish, subscribe, timer, negotiation, logging or extension calls. Missing headers retain autonomous behavior for older hosts; malformed or duplicate present values remain distinguishable so the host can refuse them instead of silently downgrading authority.
+- Re-export the common SDK's bounded, fixed-format tmux availability, session, window and pane read contracts and generated descriptors.
+
+### Changed
+
+- Adopt common SDK `v0.4.0-rc.15` for the subject-classified tmux read contract.
+
 ## [0.4.0-rc.15] - 2026-09-15
 
 ### Added

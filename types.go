@@ -78,6 +78,16 @@ type (
 	PresentationResult           = plugin.PresentationResult
 	TerminalPresentationProvider = plugin.TerminalPresentationProvider
 
+	TmuxAvailability        = plugin.TmuxAvailability
+	TmuxAvailabilityRequest = plugin.TmuxAvailabilityRequest
+	TmuxAvailabilityResult  = plugin.TmuxAvailabilityResult
+	TmuxSessionsRequest     = plugin.TmuxSessionsRequest
+	TmuxSessionsResult      = plugin.TmuxSessionsResult
+	TmuxWindowsRequest      = plugin.TmuxWindowsRequest
+	TmuxWindowsResult       = plugin.TmuxWindowsResult
+	TmuxPanesRequest        = plugin.TmuxPanesRequest
+	TmuxPanesResult         = plugin.TmuxPanesResult
+
 	DesktopSessionStatus                   = plugin.DesktopSessionStatus
 	DesktopApplication                     = plugin.DesktopApplication
 	DesktopApplicationWindow               = plugin.DesktopApplicationWindow
@@ -181,6 +191,20 @@ const (
 	FreshnessStale                   = plugin.FreshnessStale
 	FreshnessUnknown                 = plugin.FreshnessUnknown
 
+	TmuxService             = plugin.TmuxService
+	TmuxContractRevision    = plugin.TmuxContractRevision
+	TmuxAvailabilityCommand = plugin.TmuxAvailabilityCommand
+	TmuxSessionsCommand     = plugin.TmuxSessionsCommand
+	TmuxWindowsCommand      = plugin.TmuxWindowsCommand
+	TmuxPanesCommand        = plugin.TmuxPanesCommand
+	TmuxReadMaxBytes        = plugin.TmuxReadMaxBytes
+	TmuxStateAbsent         = plugin.TmuxStateAbsent
+	TmuxStateNoServer       = plugin.TmuxStateNoServer
+	TmuxStateOK             = plugin.TmuxStateOK
+	TmuxSessionsFormat      = plugin.TmuxSessionsFormat
+	TmuxWindowsFormat       = plugin.TmuxWindowsFormat
+	TmuxPanesFormat         = plugin.TmuxPanesFormat
+
 	DesktopApplicationsService             = plugin.DesktopApplicationsService
 	DesktopApplicationsContractRevision    = plugin.DesktopApplicationsContractRevision
 	DesktopApplicationsStatusCommand       = plugin.DesktopApplicationsStatusCommand
@@ -211,6 +235,11 @@ const (
 )
 
 var (
+	CmdTmuxAvailability = plugin.CmdTmuxAvailability
+	CmdTmuxSessions     = plugin.CmdTmuxSessions
+	CmdTmuxWindows      = plugin.CmdTmuxWindows
+	CmdTmuxPanes        = plugin.CmdTmuxPanes
+
 	CmdDesktopApplicationsStatus       = plugin.CmdDesktopApplicationsStatus
 	CmdDesktopApplicationsScan         = plugin.CmdDesktopApplicationsScan
 	CmdDesktopApplicationsScanV2       = plugin.CmdDesktopApplicationsScanV2

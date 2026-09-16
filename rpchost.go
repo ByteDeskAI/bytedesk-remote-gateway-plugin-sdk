@@ -81,6 +81,10 @@ func NewHost(socket string) plugin.Host {
 func (h *rpcHost) url(path string) string { return "http://host" + path }
 
 func (h *rpcHost) post(ctx context.Context, path string, body, out any) error {
+	return h.postWithHeaders(ctx, path, body, out, nil)
+}
+
+func (h *rpcHost) postWithHeaders(ctx context.Context, path string, body, out any, headers http.Header) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	var buf bytes.Buffer
@@ -94,6 +98,15 @@ func (h *rpcHost) post(ctx context.Context, path string, body, out any) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	for key, values := range headers {
+		if len(values) == 0 {
+			req.Header.Set(key, "")
+			continue
+		}
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
+	}
 	resp, err := h.client.Do(req)
 	if err != nil {
 		return err
@@ -210,7 +223,11 @@ func (h *rpcHost) Publish(env bus.Envelope) error {
 
 func (h *rpcHost) Request(ctx context.Context, env bus.Envelope) (bus.Envelope, error) {
 	var reply bus.Envelope
-	err := h.post(ctx, "/request", env, &reply)
+	var headers http.Header
+	if transport, ok := subjectLeaseTransportFromContext(ctx); ok && transport.present {
+		headers = http.Header{HeaderSubjectLease: append([]string(nil), transport.values...)}
+	}
+	err := h.postWithHeaders(ctx, "/request", env, &reply, headers)
 	return reply, err
 }
 
