@@ -60,6 +60,16 @@ cleanup on withdrawal, including cleanup returned after an asynchronous mount
 resolves late. The SDK type declaration does not prove a host implements these
 behaviors; unsupported hosts must not advertise the capability.
 
+### Request-correlated logs
+
+An HTTP plugin binds its host logger to the current request with
+`LoggerForRequest(host, request)`. The helper accepts one canonical
+host-minted `HeaderCorrelationID` value and adds it to every entry as the
+structured `correlation_id` field. The host must strip client copies before it
+stamps the private plugin transport. Missing or invalid headers preserve the
+ordinary logger, so plugins remain compatible with older hosts. Correlation is
+diagnostic metadata and never grants authority.
+
 ### Terminal presentation owner dispatch
 
 `terminal.presentation.v1` is inherited from common SDK v0.4.0-rc.6. A host may
