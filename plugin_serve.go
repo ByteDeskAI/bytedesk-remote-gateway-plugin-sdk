@@ -107,6 +107,7 @@ func ServePlugin(ctx context.Context, p Plugin, cfg PluginConfig) (result error)
 	if len(hostHooks) != 0 {
 		cfgHTTP.Handler = lifecycleHookHandler(p, hostHooks, cfgHTTP.Handler)
 	}
+	cfgHTTP.Handler = withSubjectLeaseContext(cfgHTTP.Handler)
 	return ServeContext(ctx, cfgHTTP)
 }
 
