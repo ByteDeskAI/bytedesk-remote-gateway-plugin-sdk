@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.15] - 2026-09-15
+
+### Added
+
+- `HeaderCorrelationID`, `CorrelationID`, and `LoggerForRequest` bind one canonical host-minted request id to structured plugin logs. The id crosses spawned-plugin RPC in the existing log arguments, while missing headers from older hosts keep the ordinary logger unchanged.
+
+### Changed
+
+- Adopt common SDK `v0.4.0-rc.14` for the additive correlation logger helper.
+
 ## [0.4.0-rc.14] - 2026-09-15
 
 ### Fixed
