@@ -332,6 +332,42 @@ func (h *rpcHost) StateDir(pluginID string) string {
 
 func (h *rpcHost) Logger() plugin.Logger { return h.logger }
 
+func (h *rpcHost) Profiling() plugin.Profiler { return rpcProfiler{h: h} }
+
+type rpcProfiler struct{ h *rpcHost }
+
+func (p rpcProfiler) Enabled() bool {
+	if p.h == nil || p.h.client == nil {
+		return false
+	}
+	req, err := http.NewRequest(http.MethodGet, p.h.url("/profiling"), nil)
+	if err != nil {
+		return false
+	}
+	resp, err := p.h.client.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return false
+	}
+	var out struct {
+		Enabled bool `json:"enabled"`
+	}
+	if json.NewDecoder(resp.Body).Decode(&out) != nil {
+		return false
+	}
+	return out.Enabled
+}
+
+func (p rpcProfiler) Set(enabled bool) {
+	if p.h == nil {
+		return
+	}
+	_ = p.h.post(context.Background(), "/profiling", map[string]any{"enabled": enabled}, nil)
+}
+
 func (h *rpcHost) BumpContributions() {
 	_ = h.post(context.Background(), "/bump", struct{}{}, nil)
 }

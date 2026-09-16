@@ -215,6 +215,7 @@ func (lifecycleHost) Publish(Envelope) error                              { retu
 func (lifecycleHost) Subscribe(string, func(Envelope)) func()             { return func() {} }
 func (lifecycleHost) Request(context.Context, Envelope) (Envelope, error) { return Envelope{}, nil }
 func (lifecycleHost) Logger() Logger                                      { return nil }
+func (lifecycleHost) Profiling() Profiler                                 { return NopProfiler() }
 func (lifecycleHost) StateDir(string) string                              { return "" }
 func (lifecycleHost) Every(time.Duration, func()) func()                  { return func() {} }
 func (lifecycleHost) BumpContributions()                                  {}

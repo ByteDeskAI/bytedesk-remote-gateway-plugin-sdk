@@ -20,6 +20,7 @@ func (h correlationTestHost) Request(_ context.Context, _ Envelope) (Envelope, e
 	return Envelope{}, nil
 }
 func (h correlationTestHost) Logger() Logger                     { return h.logger }
+func (h correlationTestHost) Profiling() Profiler                { return NopProfiler() }
 func (h correlationTestHost) StateDir(string) string             { return "" }
 func (h correlationTestHost) Every(time.Duration, func()) func() { return func() {} }
 func (h correlationTestHost) BumpContributions()                 {}

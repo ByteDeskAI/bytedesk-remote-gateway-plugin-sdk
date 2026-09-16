@@ -168,3 +168,40 @@ func TestNewHostUsesEnvironmentSocket(t *testing.T) {
 		t.Fatalf("explicit socket %q", got)
 	}
 }
+
+func TestRPCHostProfilingRoundTrip(t *testing.T) {
+	enabled := false
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/profiling" {
+			t.Errorf("path = %q", r.URL.Path)
+			http.NotFound(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			_ = json.NewEncoder(w).Encode(map[string]any{"enabled": enabled})
+		case http.MethodPost:
+			var body struct {
+				Enabled bool `json:"enabled"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				t.Errorf("decode: %v", err)
+			}
+			enabled = body.Enabled
+			_ = json.NewEncoder(w).Encode(map[string]any{"enabled": enabled})
+		default:
+			http.Error(w, "method", http.StatusMethodNotAllowed)
+		}
+	}))
+	defer srv.Close()
+	h := NewHost("").(*rpcHost)
+	h.client = &http.Client{Transport: rewriteHostTransport{base: srv.URL, delegate: http.DefaultTransport}}
+	p := h.Profiling()
+	if p.Enabled() {
+		t.Fatal("profiling started on")
+	}
+	p.Set(true)
+	if !p.Enabled() {
+		t.Fatal("Set did not enable")
+	}
+}

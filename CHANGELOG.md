@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.17] - 2026-09-16
+
+### Added
+
+- Re-export `Profiler` and `NopProfiler`. `rpcHost.Profiling()` reads and writes the host RPC `/profiling` switch so a spawned plugin can enable or disable its own profiler at runtime.
+
+### Changed
+
+- Adopt common SDK `v0.4.0-rc.16` for `Host.Profiling()`. Host implementations must satisfy the new method.
+
 ## [0.4.0-rc.16] - 2026-09-15
 
 ### Added

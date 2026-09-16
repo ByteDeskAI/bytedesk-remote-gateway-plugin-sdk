@@ -39,6 +39,7 @@ func (h *host) Request(ctx context.Context, env bus.Envelope) (bus.Envelope, err
 }
 
 func (h *host) Logger() pluginsdk.Logger           { return nil }
+func (h *host) Profiling() pluginsdk.Profiler      { return pluginsdk.NopProfiler() }
 func (h *host) StateDir(string) string             { return "" }
 func (h *host) Every(time.Duration, func()) func() { return func() {} }
 func (h *host) BumpContributions()                 {}

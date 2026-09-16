@@ -43,9 +43,10 @@ type (
 	// manifest's spawn field, and the Host handed to Start differs only in
 	// whether its calls cross a socket. Serve/ServeContext below is the
 	// entry point for the spawned mode.
-	Plugin = plugin.Plugin
-	Host   = plugin.Host
-	Logger = plugin.Logger
+	Plugin   = plugin.Plugin
+	Host     = plugin.Host
+	Logger   = plugin.Logger
+	Profiler = plugin.Profiler
 
 	// Optional capabilities, interface-segregated: implement only what you
 	// need and the host type-asserts for each.
@@ -109,6 +110,9 @@ type (
 	DesktopApplicationsQuitRequest         = plugin.DesktopApplicationsQuitRequest
 	DesktopApplicationsQuitResult          = plugin.DesktopApplicationsQuitResult
 )
+
+// NopProfiler is the always-off profiler for tests and unscoped hosts.
+func NopProfiler() Profiler { return plugin.NopProfiler() }
 
 const (
 	TargetGateway = plugin.TargetGateway
