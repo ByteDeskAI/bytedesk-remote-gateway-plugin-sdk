@@ -1,5 +1,7 @@
 github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.17 h1:8h53ZeHnmPdNCqTDSWcsgTiigDfj+bnMXmsizMzLWb8=
 github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.17/go.mod h1:MYucZhH3KqdTUXHOYPDMKisvNIEuz1jQyjo63GyJqVA=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.1 h1:LzX7BuCk5RF+R8tq0icON/CvoHMO1PJBkyLAq3t+v1Y=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.1/go.mod h1:NzXRN0V35MEzHbQgcjbba2oVM1Gt4a6Ek42bs7/Kx2M=
 github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAwZ/2OOE=
 github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/klauspost/compress v1.18.0 h1:c/Cqfb0r+Yi+JtIEq73FWXVkRonBlf0CRNYc8Zttxdo=
