@@ -65,8 +65,12 @@ type PluginConfig struct {
 //	identity → manifest → credentials → dial → negotiate → check → bind →
 //	validate → start → lifecycle endpoints → HTTP
 //
-// Nothing that can refuse happens after Start, and nothing that needs the bus
-// happens before Bind. A failure at any step stops the steps that ran before
+// Lifecycle endpoints mount after Start on purpose, so a host can never call
+// Ready, CheckActivation or HealthSections before the plugin's own Start has
+// run; that ordering means mounting them is the one step after Start that can
+// still refuse (the substrate can deny or reject the subject). Nothing else
+// that can refuse happens after Start, and nothing needs the bus before Bind.
+// A failure at any step, including that one, stops the steps that ran before
 // it: a partial start is always stopped, which is the one v1 behaviour worth
 // carrying across unchanged.
 func ServePlugin(ctx context.Context, p Plugin, cfg PluginConfig) (result error) {
