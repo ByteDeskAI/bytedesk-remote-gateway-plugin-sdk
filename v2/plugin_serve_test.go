@@ -342,6 +342,112 @@ func TestLifecycleEndpointsAreMounted(t *testing.T) {
 	<-done
 }
 
+// TestLifecycleMountRefusalAfterStartStillStopsThePlugin pins the one step
+// after Start that can still refuse (see the ServePlugin doc comment): mounting
+// the lifecycle endpoints. A plugin whose manifest grants do not cover its own
+// lifecycle subject tree must still get a clean Stop, exactly like a refusal
+// earlier in the handshake — "a partial start is always stopped" cannot have a
+// silent exception for the one step that runs latest.
+func TestLifecycleMountRefusalAfterStartStillStopsThePlugin(t *testing.T) {
+	store := memory.NewStore(memory.WithCapabilities(bus.Capabilities{Services: true, MaxPayload: 64 << 10}))
+	t.Cleanup(store.Close)
+
+	id := "files"
+	// Every grant OwnNamespace would normally hand the plugin, minus Serves:
+	// this plugin may receive tick/inbox traffic and answer commands, but it
+	// was never granted the right to mount anything under svc.files.>, so
+	// Services().Serve refuses the lifecycle endpoints specifically.
+	grants := bus.Grants{
+		Publish:   []bus.Pattern{bus.Pattern("event." + id + ".>"), bus.Pattern("tick." + id + ".>")},
+		Subscribe: []bus.Pattern{bus.Pattern("tick." + id + ".>"), bus.Pattern("_INBOX." + id + ".>"), "cmd.plugin.v1.>"},
+		Request:   []bus.Pattern{"cmd.plugin.v1.>"},
+	}
+	hostBus := store.Connect(bus.Identity{PluginID: "host", Generation: "gen-1", Role: bus.RoleHost, Grants: bus.Grants{
+		Subscribe: []bus.Pattern{"cmd.plugin.v1.>"},
+		Publish:   []bus.Pattern{bus.Pattern("event." + id + ".>")},
+	}})
+	t.Cleanup(func() { _ = hostBus.Close() })
+	pluginBus := store.Connect(bus.Identity{PluginID: id, Generation: "gen-1", Role: bus.RolePlugin, Grants: grants})
+	t.Cleanup(func() { _ = pluginBus.Close() })
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	negotiator, err := hostBus.Subscribe(ctx, pluginsdk.Pattern(pluginsdk.NegotiateSubject), func(_ context.Context, m *bus.Msg) {
+		_ = m.Respond(nil, negotiateReply(id, bus.Capabilities{Services: true, MaxPayload: 64 << 10}))
+	})
+	if err != nil {
+		t.Fatalf("mount the host side of negotiate: %v", err)
+	}
+	defer negotiator.Cancel()
+
+	p := &testPlugin{id: id}
+	err = pluginsdk.ServePlugin(ctx, p, pluginsdk.PluginConfig{
+		Socket: filepath.Join(t.TempDir(), "plugin.sock"),
+		Bus:    pluginBus,
+	})
+
+	var f bus.Fault
+	if !errors.As(err, &f) || f.Code != bus.FaultDenied {
+		t.Fatalf("ServePlugin error = %v, want a FaultDenied mounting the lifecycle service", err)
+	}
+	if !p.did(func(p *testPlugin) bool { return p.started }) {
+		t.Error("Start never ran; this test proves nothing about a refusal AFTER Start")
+	}
+	if !p.did(func(p *testPlugin) bool { return p.stopped }) {
+		t.Error("Stop never ran: a lifecycle-mount refusal after Start must still be cleaned up")
+	}
+}
+
+// TestLifecycleEndpointsAreNotReachableWithoutTheBrokersRequestGrant pins the
+// boundary lifecycle.go documents: this SDK performs no caller-identity check
+// of its own on activation.check/ready/health, so the ONLY thing standing
+// between a stranger and those endpoints is the substrate's Request grant. If
+// that grant were ever bypassable, these hooks would be reachable by anyone
+// who could reach the bus at all.
+func TestLifecycleEndpointsAreNotReachableWithoutTheBrokersRequestGrant(t *testing.T) {
+	store := memory.NewStore(memory.WithCapabilities(bus.Capabilities{Services: true, MaxPayload: 64 << 10}))
+	t.Cleanup(store.Close)
+
+	id := "files"
+	grants := plugin.OwnNamespace(id)
+	grants.Subscribe = append(grants.Subscribe, "cmd.plugin.v1.>")
+	grants.Request = append(grants.Request, "cmd.plugin.v1.>", bus.Pattern("svc."+id+".>"))
+	pluginBus := store.Connect(bus.Identity{PluginID: id, Generation: "gen-1", Role: bus.RoleHost, Grants: grants})
+	t.Cleanup(func() { _ = pluginBus.Close() })
+
+	p := &testPlugin{id: id}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	negotiator, err := pluginBus.Subscribe(ctx, pluginsdk.Pattern(pluginsdk.NegotiateSubject), func(_ context.Context, m *bus.Msg) {
+		_ = m.Respond(nil, negotiateReply(id, bus.Capabilities{Services: true, MaxPayload: 64 << 10}))
+	})
+	if err != nil {
+		t.Fatalf("mount the host side of negotiate: %v", err)
+	}
+	defer negotiator.Cancel()
+
+	done := make(chan error, 1)
+	go func() {
+		done <- pluginsdk.ServePlugin(ctx, p, pluginsdk.PluginConfig{
+			Socket: filepath.Join(t.TempDir(), "plugin.sock"),
+			Bus:    pluginBus,
+		})
+	}()
+	waitFor(t, func() bool { return p.did(func(p *testPlugin) bool { return p.started }) })
+	defer func() { cancel(); <-done }()
+
+	// A stranger on the same substrate, granted nothing toward svc.files.>.
+	stranger := store.Connect(bus.Identity{PluginID: "stranger", Generation: "gen-1", Role: bus.RolePlugin})
+	t.Cleanup(func() { _ = stranger.Close() })
+
+	subject := pluginsdk.LifecycleSubject(id, "ready")
+	_, err = stranger.Request(ctx, subject, nil)
+	var f bus.Fault
+	if !errors.As(err, &f) || f.Code != bus.FaultDenied {
+		t.Fatalf("stranger Request(%s) = %v, want FaultDenied from the substrate", subject, err)
+	}
+}
+
 // memoryBus is the SDK's own test double, bound to id's own namespace. It is
 // how a plugin author tests a plugin with no broker at all, and this test is
 // the SDK proving its own advice works.

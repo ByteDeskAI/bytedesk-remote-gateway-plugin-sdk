@@ -12,6 +12,16 @@ import (
 // socket. In v2 they are ordinary service endpoints in the plugin's own
 // namespace, discoverable like anything else, and the negotiation no longer
 // carries a hook list at all.
+//
+// Who may call one is not decided here. mountHook checks nothing about the
+// caller; the substrate does, because reaching svc.<id>.lifecycle.v1.<hook> at
+// all already requires a Request grant naming that subject, and the substrate
+// enforces that grant before the message is ever delivered to this handler
+// (see e.g. bus/memory's checkPublish(GrantRequest, ...) on every Request).
+// That is the same boundary every other service endpoint in this SDK relies
+// on: authorization is the broker/host's job, and an SDK-level identity check
+// here would duplicate a check that already runs, not add one that is
+// missing.
 const (
 	LifecycleService = "lifecycle"
 
