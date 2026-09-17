@@ -49,6 +49,8 @@ Version 0.4 re-exports the common runtime model and optional `ActivationChecker`
 
 The root npm package `@bytedesk/gateway-plugin-ui` has no framework dependencies. Its shared types are generated from the pinned common Go SDK, and its `PluginUIModule.mount(element, host)` contract returns a cleanup function. The host supplies scoped identity, an abort signal, navigation and brokered request/subscription operations. Each plugin owns its renderer; no private React instance crosses the contract. Privileged in-page modules still require explicit trust; this interface alone is not a sandbox.
 
+Version 2 adds the common SDK v2 generated bus contracts without pretending the existing UI host facade has already migrated. Import runtime validators from `@bytedesk/gateway-plugin-ui/v2/contracts`, descriptor constructors from `@bytedesk/gateway-plugin-ui/v2/descriptors`, and the schema sidecar from `@bytedesk/gateway-plugin-ui/v2/schemas`. The corresponding TypeScript declarations resolve from the contracts export. All four files are byte-compared with the pinned common SDK v2 module in the ordinary Go test suite.
+
 Modules using that mount contract require `ui.mount.v1` through protocol
 negotiation. `host.location()` exposes the current admitted document location
 as raw `pathname`, `search`, `hash` and once-decoded `params`; changes arrive as
