@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+### Added
+
+- **SDK v2 (`v2/`), a new module beside v1.** `github.com/ByteDeskAI/bytedesk-remote-gateway-plugin-sdk/v2` re-exports the `bytedesk-sdk-dependencies/v2` contract and adds this side of it: the v2 handshake, the NATS transport and the packaging tool. v1 keeps building and keeps receiving fixes.
+- `v2/transport/natsconn` — the NATS transport, and the only package in either SDK that imports `github.com/nats-io/*`. A unix custom dialer (a contained plugin has no network namespace, so TCP is impossible by construction), `UserCredentials`, `CustomInboxPrefix("_INBOX.<id>")` so a reply to one plugin can never reach another, unlimited reconnect, and an error handler that maps a broker's asynchronous `Permissions Violation` onto `FaultDenied` — on the subscription for a subscribe refusal, and on the next call for that subject for a publish refusal, which a core publish can only report out of band.
+- `v2/plugin_serve.go` — `ServePlugin` runs the whole ordered handshake: identity, manifest, a ≤5s wait for `GATEWAY_BUS_CREDS`, dial, `cmd.plugin.v1.negotiate`, `CheckProtocol` (fail-closed on major, required features and `needs`), `Bind`, `Validate`, `Start`, lifecycle endpoints, HTTP. HTTP routes on `GATEWAY_PLUGIN_SOCKET` are unchanged from v1.
+- Lifecycle hooks are service endpoints, not negotiated callbacks: `svc.<id>.lifecycle.v1.{activation.check,ready,health}`, mounted for whichever optional interfaces the plugin implements.
+- `v2/cmd/plugin-sdk` — `pack` prints the grants digest an operator's consent is keyed by, and `digest` prints it without packing. The CLI's version is the embedded `VERSION` file rather than a constant that had drifted four releases from it.
+- `v2/v1compat` re-exports the common SDK's v1 `Host` facade over a bound v2 `Base`, so a v1 plugin runs unchanged while it is converted.
+- `v2/internal/fakebroker` — a NATS peer spoken by hand over a unix socket, so the SDK's own tests can watch a real CONNECT be refused without depending on `nats-server` and without putting a broker import outside the transport.
+
+### Changed
+
+- **Breaking, v2 only.** `Protocol.Major` is 2. `Start` and `Validate` take no host argument: `Bind` has already installed the generation's bus, logger, profiler, state dir and identity. `Host`, `Kit`, `CommandHandler`, `StatusSubscriber`, `ObservableRegistrar`, `Negotiator` and `ExtensionRegistrar` are retired. Every `dev-grants.json` entry re-approves once, because the digest now covers `serves`, `streams`, `kv`, `objects` and `needs`.
+- A spawned v2 plugin logs to stderr, which the host already captures. v1 forwarded log records over the host RPC wire; v2 has no such wire, and routing them over the bus would drop a line whenever nothing happened to be subscribed.
+
+### Known gaps
+
+- `natsconn` implements core pub/sub, request/reply, services and correlation. Streams, KV, objects and schedules are reported **false** by `Capabilities()`, so a manifest that needs one fails closed at the handshake naming the capability rather than at first use. The JetStream surfaces land with the durable re-platforms.
+- A spawned v2 plugin has no host-driven profiling switch: the subject that carries it is the gateway's to define when it adopts v2.
+
 ## [0.4.0-rc.17] - 2026-09-16
 
 ### Added
