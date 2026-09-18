@@ -78,7 +78,7 @@ svc.<id>.lifecycle.v1.health
 Implement `ActivationChecker`, `Readier` or `HealthContributor` and the endpoint
 appears; implement none and no lifecycle service is mounted at all.
 
-## What rc.1 does not implement yet
+## Transport capabilities not implemented yet
 
 `transport/natsconn` implements core pub/sub, request/reply, services and
 correlation. It does **not** implement streams, KV, objects or schedules.
