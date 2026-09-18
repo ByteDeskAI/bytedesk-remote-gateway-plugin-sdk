@@ -39,14 +39,17 @@ func (p *testPlugin) ID() string { return p.id }
 
 func (p *testPlugin) Manifest() pluginsdk.Manifest {
 	return pluginsdk.Manifest{
-		ID:       p.id,
-		Version:  "1.0.0",
-		Targets:  []string{pluginsdk.TargetGateway},
-		Role:     pluginsdk.RoleSystem,
-		Spawn:    true,
-		Binary:   p.id,
-		Needs:    p.needs,
-		Protocol: &pluginsdk.ProtocolRequirements{Major: pluginsdk.ProtocolMajor},
+		Contract:  pluginsdk.ProtocolMajor,
+		Kind:      pluginsdk.KindProcess,
+		ID:        p.id,
+		Version:   "1.0.0",
+		Identity:  &pluginsdk.ManifestIdentity{DisplayName: "Test plugin", Description: "Exercises the v2 spawned-plugin handshake."},
+		Publisher: &pluginsdk.Publisher{ID: "bytedesk", Name: "ByteDesk"},
+		Targets:   []string{pluginsdk.TargetGateway},
+		Role:      pluginsdk.RoleSystem,
+		Binary:    p.id,
+		Needs:     p.needs,
+		Protocol:  &pluginsdk.ProtocolRequirements{Major: pluginsdk.ProtocolMajor},
 	}
 }
 

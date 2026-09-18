@@ -65,6 +65,11 @@ type (
 	StreamDecl           = plugin.StreamDecl
 	KVDecl               = plugin.KVDecl
 	ObjectDecl           = plugin.ObjectDecl
+	ManifestIdentity     = plugin.ManifestIdentity
+	Images               = plugin.Images
+	Support              = plugin.Support
+	Publisher            = plugin.Publisher
+	StaticMount          = plugin.StaticMount
 	Point                = plugin.Point
 	Registrar            = plugin.Registrar
 	Descriptor           = plugin.Descriptor
@@ -101,6 +106,11 @@ const (
 	TargetVault   = plugin.TargetVault
 	RoleSystem    = plugin.RoleSystem
 	RoleExtension = plugin.RoleExtension
+
+	KindBuiltin = plugin.KindBuiltin
+	KindProcess = plugin.KindProcess
+	KindUI      = plugin.KindUI
+	KindFamily  = plugin.KindFamily
 )
 
 // Bind installs a generation's binding on a plugin's embedded Base. The host
