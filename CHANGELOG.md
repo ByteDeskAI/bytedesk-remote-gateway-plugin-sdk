@@ -4,6 +4,13 @@
 
 ### Added
 
+- `v2.0.0-rc.3` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.5` and
+  re-exports its generic `sessioncontext` contract. A plugin can open,
+  refresh, and invoke a named action on an opaque, lease-scoped host context;
+  the Gateway continues to own terminal and project resolution, dashboard
+  processes, ports, authentication, routes, and proxying. Generated browser
+  artifacts are synchronized to the released common SDK.
+
 - `v2.0.0-rc.2` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.3`, including the shared package contract verifier, attestation types, identity/static/alias/service manifest fields, and the expanded fixture corpus. The v1 module is unchanged.
 - `@bytedesk/gateway-plugin-ui@2.0.0-rc.1` ships the exact common SDK v2 generated TypeScript contracts, runtime validators, descriptors and schema sidecar through explicit `./v2/*` exports. Byte-comparison tests pin every published artifact to `bytedesk-sdk-dependencies/v2@v2.0.0-rc.1`; the existing root UI host API remains available for the gateway migration.
 - **SDK v2 (`v2/`), a new module beside v1.** `github.com/ByteDeskAI/bytedesk-remote-gateway-plugin-sdk/v2` re-exports the `bytedesk-sdk-dependencies/v2` contract and adds this side of it: the v2 handshake, the NATS transport and the packaging tool. v1 keeps building and keeps receiving fixes.

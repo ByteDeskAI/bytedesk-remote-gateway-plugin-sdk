@@ -2,6 +2,8 @@ github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.17 h1:8h53ZeHnmPdNCqTD
 github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.17/go.mod h1:MYucZhH3KqdTUXHOYPDMKisvNIEuz1jQyjo63GyJqVA=
 github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.3 h1:JlNWwq3EGx4Zb5vIEnhCRQGtHEKIG0BROzaU5aON3us=
 github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.3/go.mod h1:lf6GGDTGcxXMON20M6JJUb/nLL72WQODNYgLDgJRdE4=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.5 h1:4/CxPkpAJcUQDs1S6sNXInW+HmcrDtGi6C3BmMDl9eY=
+github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.5/go.mod h1:lf6GGDTGcxXMON20M6JJUb/nLL72WQODNYgLDgJRdE4=
 github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAwZ/2OOE=
 github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxKI=

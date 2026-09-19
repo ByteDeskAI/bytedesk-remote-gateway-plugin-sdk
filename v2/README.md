@@ -13,6 +13,7 @@ imports one module.
 | Package | What it is |
 |---|---|
 | `.` | aliases, the v2 handshake (`ServePlugin`), HTTP serving, packaging |
+| `sessioncontext` | lease-scoped opaque host interaction context (`open`, `refresh`, named `action`) |
 | `transport/natsconn` | the NATS transport, and the **only** importer of `github.com/nats-io/*` |
 | `v1compat` | the v1 `Host` facade over a bound v2 `Base`, for migrating plugins |
 | `cmd/plugin-sdk` | `validate`, `pack` (prints the grants digest), `digest`, `mcp` |
@@ -53,6 +54,15 @@ CheckProtocol → Bind → Validate → Start → lifecycle endpoints → HTTP
 
 Nothing that can refuse happens after `Start`, and nothing that needs the bus
 happens before `Bind`. A failure at any step stops the steps that ran before it.
+
+## Host-owned session contexts
+
+`sessioncontext` re-exports the common typed commands a plugin uses for a
+principal-scoped host interaction context. The substrate derives caller,
+generation, and subject lease; no plugin request can carry or forge them. The
+context has opaque IDs, revision, expiry, bounded derived state, and a closed
+set of host-approved named actions. It has no CWD, project root, port, server,
+process, proxy, private URL, or credential field.
 
 The host sets four environment variables. `GATEWAY_PLUGIN_SOCKET` and
 `GATEWAY_PLUGIN_ID` are unchanged from v1; `GATEWAY_BUS_SOCKET` and
