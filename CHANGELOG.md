@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2.0.0-rc.9] - 2026-09-19
+
+### Added
+
+- Export `FeatureUIModuleMount` from the v2 Go SDK so process plugins can
+  declare the protocol required by module-backed panels.
+
 ## [2.0.0-rc.8] - 2026-09-19
 
 ### Changed

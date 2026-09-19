@@ -19,6 +19,7 @@ const NegotiateSubject Subject = "cmd.plugin.v1.negotiate"
 const (
 	FeatureLifecycleEndpoints = "lifecycle.endpoints.v1"
 	FeatureHTTPRoutes         = "http.routes.v1"
+	FeatureUIModuleMount      = plugin.FeatureUIModuleMount
 	FeatureGrantsDigest       = "grants.digest.v2"
 )
 
