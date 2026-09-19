@@ -14,6 +14,7 @@ imports one module.
 |---|---|
 | `.` | aliases, the v2 handshake (`ServePlugin`), HTTP serving, packaging |
 | `sessioncontext` | lease-scoped opaque host interaction context (`open`, `refresh`, named `action`) |
+| `webapps` | typed host-owned discovery, creation, coding, services, logs, preview, and replay |
 | `transport/natsconn` | the NATS transport, and the **only** importer of `github.com/nats-io/*` |
 | `v1compat` | the v1 `Host` facade over a bound v2 `Base`, for migrating plugins |
 | `cmd/plugin-sdk` | `validate`, `pack` (prints the grants digest), `digest`, `mcp` |

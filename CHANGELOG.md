@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## [2.0.0-rc.7] - 2026-09-19
+
+### Added
+
+- Re-export the common SDK's typed `webapps` command, event, and durable stream
+  descriptors. Gateway plugins can use one module for application discovery
+  and creation, structured coding conversations, service lifecycle and logs,
+  preview control, and replay without receiving host process or credential
+  authority.
+
+### Changed
+
+- Requires `bytedesk-sdk-dependencies/v2@v2.0.0-rc.9` once that common SDK
+  release is available.
+
 ## [0.4.0-rc.18 / 2.0.0-rc.6] - 2026-09-19
 
 ### Added

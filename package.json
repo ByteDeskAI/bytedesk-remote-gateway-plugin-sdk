@@ -1,6 +1,6 @@
 {
   "name": "@bytedesk/gateway-plugin-ui",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.7",
   "type": "module",
   "description": "Portable Gateway plugin UI contracts and runtime snapshot validation",
   "exports": {
@@ -13,7 +13,12 @@
       "import": "./ui/v2/validators.js"
     },
     "./v2/descriptors": "./ui/v2/descriptors.js",
-    "./v2/schemas": "./ui/v2/schemas.json"
+    "./v2/schemas": "./ui/v2/schemas.json",
+    "./v2/webapps/contracts": {
+      "types": "./ui/v2/webapps/contracts.d.ts",
+      "import": "./ui/v2/webapps/validators.js"
+    },
+    "./v2/webapps/descriptors": "./ui/v2/webapps/descriptors.js"
   },
   "files": [
     "ui/index.js",
@@ -26,7 +31,10 @@
     "ui/v2/contracts.d.ts",
     "ui/v2/validators.js",
     "ui/v2/descriptors.js",
-    "ui/v2/schemas.json"
+    "ui/v2/schemas.json",
+    "ui/v2/webapps/contracts.d.ts",
+    "ui/v2/webapps/validators.js",
+    "ui/v2/webapps/descriptors.js"
   ],
   "scripts": {
     "test": "node --test ui/*.test.js"
