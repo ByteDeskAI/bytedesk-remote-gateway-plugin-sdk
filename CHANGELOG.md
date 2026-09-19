@@ -4,6 +4,11 @@
 
 ### Added
 
+- Re-export the common SDK's reusable Projects contributions in both modules:
+  ordered owner-local project views, directory context actions, typed target
+  eligibility, and host-resolved wizard context. Browser declarations and
+  validators include the same contracts.
+
 - `v2.0.0-rc.5` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.7`,
   including generated contract descriptor access for host responders.
 

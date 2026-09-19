@@ -369,6 +369,12 @@ func publicTypes() []reflect.Type {
 		reflect.TypeOf(pluginsdk.Point("")),
 		reflect.TypeOf(pluginsdk.Registrar{}),
 		reflect.TypeOf(pluginsdk.Descriptor{}),
+		reflect.TypeOf(pluginsdk.ProjectViewContribution{}),
+		reflect.TypeOf(pluginsdk.DirectoryContextActionContribution{}),
+		reflect.TypeOf(pluginsdk.ProjectDirectoryContext{}),
+		reflect.TypeOf(pluginsdk.DirectoryContextActionEligibilityRequest{}),
+		reflect.TypeOf(pluginsdk.DirectoryContextActionEligibilityResult{}),
+		reflect.TypeOf(pluginsdk.DirectoryContextActionWizardContext{}),
 		// This module's own declarations.
 		reflect.TypeOf(pluginsdk.Config{}),
 		reflect.TypeOf(pluginsdk.PluginConfig{}),

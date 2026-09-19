@@ -73,10 +73,18 @@ type (
 	Point                = plugin.Point
 	Registrar            = plugin.Registrar
 	Descriptor           = plugin.Descriptor
+
+	ProjectViewContribution                  = plugin.ProjectViewContribution
+	DirectoryContextActionContribution       = plugin.DirectoryContextActionContribution
+	ProjectDirectoryContext                  = plugin.ProjectDirectoryContext
+	DirectoryContextActionEligibilityRequest = plugin.DirectoryContextActionEligibilityRequest
+	DirectoryContextActionEligibilityResult  = plugin.DirectoryContextActionEligibilityResult
+	DirectoryContextActionWizardContext      = plugin.DirectoryContextActionWizardContext
 )
 
 const (
-	ProtocolMajor = plugin.ProtocolMajor
+	ProtocolMajor                            = plugin.ProtocolMajor
+	DirectoryContextActionEligibilityCommand = plugin.DirectoryContextActionEligibilityCommand
 
 	FaultDenied       = bus.FaultDenied
 	FaultBudget       = bus.FaultBudget

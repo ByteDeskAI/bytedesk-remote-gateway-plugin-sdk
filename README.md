@@ -39,6 +39,20 @@ forward the common SDK's role policy. The host must supply trusted compiled
 provenance and explicit per-point consent. Unknown roles fail closed; these
 helpers neither collect consent nor grant runtime authority themselves.
 
+## Projects contributions
+
+`ProjectViewContribution` and `DirectoryContextActionContribution` are aliases
+of the common SDK contracts. A project view names an ordered, owner-local panel.
+A directory action names an owner-local wizard panel; Gateway calls
+`projects.directory-context-action.eligibility.v1` with a host-resolved
+`ProjectDirectoryContext` before showing it and again before accepting the
+wizard. The context identifies the project, checkout, worktree, and directory.
+
+Gateway scopes each contribution ID to its plugin generation and removes its
+views and actions together when that generation is disabled or replaced. A
+selected deep link must fall back when its contribution is no longer present.
+The supplied paths are working context and do not grant authority by themselves.
+
 Version 0.4.0-rc.12 adopts common SDK 0.4.0-rc.11. Its resolved Applications
 executable path changes scan and registration schema hashes. Upgrade the host
 and affected plugins together; JSON optionality does not preserve those hashes.
