@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.18 / 2.0.0-rc.6] - 2026-09-19
+
 ### Added
 
 - Re-export the common SDK's reusable Projects contributions in both modules:
