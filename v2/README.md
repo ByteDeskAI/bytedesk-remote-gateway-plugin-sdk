@@ -58,6 +58,9 @@ happens before `Bind`. A failure at any step stops the steps that ran before it.
 ## Host-owned session contexts
 
 `sessioncontext` re-exports the common typed commands a plugin uses for a
+public, host-served session-context broker. Its commands use
+`cmd.session-context.v1.*`; `cmd.host.*` remains host-internal and unavailable
+to plugins.
 principal-scoped host interaction context. The substrate derives caller,
 generation, and subject lease; no plugin request can carry or forge them. The
 context has opaque IDs, revision, expiry, bounded derived state, and a closed

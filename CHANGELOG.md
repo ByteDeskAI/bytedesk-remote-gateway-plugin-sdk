@@ -4,6 +4,11 @@
 
 ### Added
 
+- `v2.0.0-rc.4` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.6`.
+  `sessioncontext` now uses the public, host-served
+  `cmd.session-context.v1.*` namespace. `cmd.host.*` remains permanently
+  unavailable to plugins for host-internal operations.
+
 - `v2.0.0-rc.3` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.5` and
   re-exports its generic `sessioncontext` contract. A plugin can open,
   refresh, and invoke a named action on an opaque, lease-scoped host context;
