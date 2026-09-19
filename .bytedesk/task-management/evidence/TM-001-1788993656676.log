@@ -1,0 +1,1 @@
+Remote default-branch integration verified: origin/main equals release commit 8a4ca876577136fe70ffb2d034b88bab87c74884. Exact clean post-integration commit passed go test ./..., go test -race ./..., npm test 8/8, generated TypeScript and shared fixture byte parity, version/common-pin/no-replace checks, npm pack --dry-run, and git diff --check.
