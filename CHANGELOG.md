@@ -4,6 +4,9 @@
 
 ### Added
 
+- `v2.0.0-rc.5` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.7`,
+  including generated contract descriptor access for host responders.
+
 - `v2.0.0-rc.4` adopts `bytedesk-sdk-dependencies/v2@v2.0.0-rc.6`.
   `sessioncontext` now uses the public, host-served
   `cmd.session-context.v1.*` namespace. `cmd.host.*` remains permanently
