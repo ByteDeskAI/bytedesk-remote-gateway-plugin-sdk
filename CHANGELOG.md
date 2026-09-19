@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2.0.0-rc.8] - 2026-09-19
+
+### Changed
+
+- Requires `bytedesk-sdk-dependencies/v2@v2.0.0-rc.11` and publishes the
+  corrected `cmd.gateway.web-apps.v1.*` host-operation descriptors.
+
 ## [2.0.0-rc.7] - 2026-09-19
 
 ### Added
