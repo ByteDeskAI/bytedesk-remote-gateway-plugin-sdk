@@ -1,6 +1,10 @@
 package pluginsdk
 
 import (
+	"context"
+	"net/http"
+
+	"github.com/ByteDeskAI/bytedesk-remote-gateway-plugin-sdk/v2/transport/natsconn"
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/semver"
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2/bus"
 	"github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2/plugin"
@@ -106,6 +110,14 @@ const (
 	HeaderFault       = bus.HeaderFault
 	HeaderCorrelation = bus.HeaderCorrelation
 
+	// HeaderSubjectLease is a different thing from HeaderSubject above: that
+	// one is the reserved "bd-subject" the substrate itself would stamp from a
+	// connection's own credential (not yet built for v2 -- nothing does that
+	// today). This is an ordinary, unreserved header a plugin sets itself,
+	// carrying an opaque lease id it can only ever echo from its own inbound
+	// request, never manufacture. See transport/natsconn.ContextForRequest.
+	HeaderSubjectLease = natsconn.HeaderSubjectLease
+
 	GrantPublish   = bus.GrantPublish
 	GrantSubscribe = bus.GrantSubscribe
 	GrantRequest   = bus.GrantRequest
@@ -149,3 +161,15 @@ func ParseManifest(raw []byte) (Manifest, error) { return plugin.ParseManifest(r
 
 // CoreVersionAtLeast is the shared minCoreVersion compare.
 func CoreVersionAtLeast(have, need string) bool { return semver.AtLeast(have, need) }
+
+// ContextForRequest and SubjectLeaseFromContext carry an operator subject
+// lease from a plugin's own inbound HTTP request into the context it passes
+// to a Bus.Request call, which then attaches it to the outbound message. A
+// plugin reads its inbound request's HeaderSubjectLease itself and calls
+// ContextForRequest(r) before making the Request call; nothing does this
+// automatically, unlike the v1 SDK's HTTP middleware, because v2 does not yet
+// give a plugin's own HTTP surface a comparable middleware seam.
+func ContextForRequest(r *http.Request) context.Context { return natsconn.ContextForRequest(r) }
+func SubjectLeaseFromContext(ctx context.Context) (string, error) {
+	return natsconn.SubjectLeaseFromContext(ctx)
+}

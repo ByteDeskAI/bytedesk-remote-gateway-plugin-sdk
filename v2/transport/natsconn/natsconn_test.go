@@ -3,6 +3,8 @@ package natsconn_test
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -129,6 +131,48 @@ func TestRequestReply(t *testing.T) {
 	}
 	if got, want := string(reply.Data), `{"ok":true}!`; got != want {
 		t.Fatalf("reply = %q, want %q", got, want)
+	}
+}
+
+// TestRequestForwardsSubjectLeaseFromContext proves the v2 wire's echo half
+// of subject-lease forwarding: a lease a plugin's own inbound HTTP handler
+// received (ContextForRequest) and threads into its own Request call crosses
+// the real broker as a header, unvalidated -- the gateway is the only
+// validator (its bridge resolves and checks it, mirroring exactly what
+// kernel_host_rpc.go's /request RPC handler already does for a v1 spawned
+// plugin). No lease in context means no header at all, not an empty one.
+func TestRequestForwardsSubjectLeaseFromContext(t *testing.T) {
+	const lease = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	b := fakebroker.Start(t)
+	var seen string
+	var sawHeader bool
+	b.Respond("cmd.tmux.v1.sessions", func(_ string, h map[string]string, data []byte) []byte {
+		seen, sawHeader = h["x-bytedesk-subject-lease"]
+		return []byte(`{}`)
+	})
+	c := dial(t, b)
+
+	inbound := httptest.NewRequest(http.MethodGet, "http://plugin/", nil)
+	inbound.Header.Set(natsconn.HeaderSubjectLease, lease)
+	ctx := natsconn.ContextForRequest(inbound)
+
+	if _, err := c.Request(ctx, "cmd.tmux.v1.sessions", []byte("{}")); err != nil {
+		t.Fatalf("request: %v", err)
+	}
+	if !sawHeader || seen != lease {
+		t.Fatalf("host saw lease header %q (present=%v), want %q", seen, sawHeader, lease)
+	}
+
+	var withoutHeader bool
+	b.Respond("cmd.tmux.v1.availability", func(_ string, h map[string]string, data []byte) []byte {
+		_, withoutHeader = h["x-bytedesk-subject-lease"]
+		return []byte(`{}`)
+	})
+	if _, err := c.Request(context.Background(), "cmd.tmux.v1.availability", []byte("{}")); err != nil {
+		t.Fatalf("request without a lease in context: %v", err)
+	}
+	if withoutHeader {
+		t.Fatal("a request made with no lease in context sent the header anyway")
 	}
 }
 
