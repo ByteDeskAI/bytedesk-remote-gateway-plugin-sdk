@@ -279,6 +279,13 @@ func (c *Conn) Request(ctx context.Context, subject bus.Subject, data []byte, op
 	m := nats.NewMsg(string(subject))
 	m.Data = data
 	m.Header = toNATSHeader(o.Headers)
+	// Forwarded raw, exactly as the v1 SDK's rpcHost.Request does: the host
+	// alone validates a present value (ContextForRequest/SubjectLeaseFromContext
+	// on the receiving end), so this client never duplicates that judgment and
+	// the two can never drift apart on what counts as canonical.
+	if transport, ok := subjectLeaseTransportFromContext(ctx); ok && transport.present {
+		m.Header[HeaderSubjectLease] = append([]string(nil), transport.values...)
+	}
 	reply, err := c.nc.RequestMsgWithContext(ctx, m)
 	if err != nil {
 		return nil, c.requestFault(string(subject), err)
