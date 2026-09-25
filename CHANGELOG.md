@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.19 / 2.0.0-rc.13] - 2026-09-25
+
+### Added
+
+- Re-export common SDK navigation sections, owner-qualified parent relationships, placement, explicit child extension points, and resolved snapshots in both Go modules.
+- Publish canonical navigation browser contracts at `@bytedesk/gateway-plugin-ui/v2/plugin/contracts`.
+- Pin released common SDK v0.4.0-rc.20 and v2.0.0-rc.15.
+
 ### Added
 
 - Re-export `ConsentCapabilities` and `CapabilityEnabled` from the v2 SDK.

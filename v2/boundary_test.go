@@ -343,6 +343,12 @@ func publicTypes() []reflect.Type {
 		reflect.TypeOf(pluginsdk.Base{}),
 		reflect.TypeOf(pluginsdk.Binding{}),
 		reflect.TypeOf(pluginsdk.Manifest{}),
+		reflect.TypeOf(pluginsdk.NavItem{}),
+		reflect.TypeOf(pluginsdk.NavReference{}),
+		reflect.TypeOf(pluginsdk.NavigationNode{}),
+		reflect.TypeOf(pluginsdk.NavigationDiagnostic{}),
+		reflect.TypeOf(pluginsdk.NavigationSnapshot{}),
+
 		reflect.TypeOf(pluginsdk.ConsentCapability{}),
 		iface((*pluginsdk.Logger)(nil)),
 		iface((*pluginsdk.Profiler)(nil)),

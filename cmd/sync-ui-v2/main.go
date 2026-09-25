@@ -17,6 +17,7 @@ func artifactPaths() []string {
 			paths = append(paths, filepath.Join(pkg, "typescript", file))
 		}
 	}
+	paths = append(paths, "plugin/typescript/contracts.d.ts", "plugin/typescript/validators.js")
 	return paths
 }
 func syncArtifacts(source, root string) error {

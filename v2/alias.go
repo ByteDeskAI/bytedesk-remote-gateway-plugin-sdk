@@ -18,21 +18,26 @@ import (
 // module. In v2 those are generated per package by contractgen and imported
 // where they are used; what lives here is the contract every plugin touches.
 type (
-	Bus          = bus.Bus
-	Subject      = bus.Subject
-	Pattern      = bus.Pattern
-	Headers      = bus.Headers
-	Msg          = bus.Msg
-	Handler      = bus.Handler
-	Subscription = bus.Subscription
-	Fault        = bus.Fault
-	Capabilities = bus.Capabilities
-	Identity     = bus.Identity
-	Grants       = bus.Grants
-	GrantKind    = bus.GrantKind
-	Role         = bus.Role
-	Lease        = bus.Lease
-	Caller       = bus.Caller
+	NavReference         = plugin.NavReference
+	NavigationNode       = plugin.NavigationNode
+	NavigationDiagnostic = plugin.NavigationDiagnostic
+	NavigationSnapshot   = plugin.NavigationSnapshot
+	NavItem              = plugin.NavItem
+	Bus                  = bus.Bus
+	Subject              = bus.Subject
+	Pattern              = bus.Pattern
+	Headers              = bus.Headers
+	Msg                  = bus.Msg
+	Handler              = bus.Handler
+	Subscription         = bus.Subscription
+	Fault                = bus.Fault
+	Capabilities         = bus.Capabilities
+	Identity             = bus.Identity
+	Grants               = bus.Grants
+	GrantKind            = bus.GrantKind
+	Role                 = bus.Role
+	Lease                = bus.Lease
+	Caller               = bus.Caller
 
 	Service      = bus.Service
 	ServiceSpec  = bus.ServiceSpec
@@ -88,6 +93,13 @@ type (
 )
 
 const (
+	NavKindLink                              = plugin.NavKindLink
+	NavKindGroup                             = plugin.NavKindGroup
+	NavKindSection                           = plugin.NavKindSection
+	NavPlacementMain                         = plugin.NavPlacementMain
+	NavPlacementPinned                       = plugin.NavPlacementPinned
+	NavPlacementFooter                       = plugin.NavPlacementFooter
+	NavigationChildrenInterface              = plugin.NavigationChildrenInterface
 	ProtocolMajor                            = plugin.ProtocolMajor
 	DirectoryContextActionEligibilityCommand = plugin.DirectoryContextActionEligibilityCommand
 
@@ -193,3 +205,6 @@ func ContextForRequest(r *http.Request) context.Context { return natsconn.Contex
 func SubjectLeaseFromContext(ctx context.Context) (string, error) {
 	return natsconn.SubjectLeaseFromContext(ctx)
 }
+
+// ValidateNavigation checks declaration shape; the host resolves relationships.
+func ValidateNavigation(items []NavItem) error { return plugin.ValidateNavigation(items) }

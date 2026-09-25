@@ -195,3 +195,7 @@ Handles expose no DOM, React, xterm instance or terminal input/output. Snapshots
 Session launches take `{kind, cwd?, count?, isolate?}` and use the existing server launch validator. File-tree mutation methods take paths relative to that tree's registered root; the host must enforce root confinement and existing file-action permissions. `availableComponents` only lists permitted targets. `assignComponent` asks the host for an operator-approved lease; it cannot silently grant itself a component. `contributeComponent` omits contributor ownership from its input: the host stamps the admitted owner and generation and removes contributions on withdrawal.
 
 Component transport revisions are nonnegative safe integers, monotonic within an identity incarnation. Clients ignore stale or duplicate revisions and sort queued initial updates; withdrawal overrides queued snapshots. The host must rotate the incarnation before exhausting safe integer range.
+
+### Hierarchical navigation
+
+Both Go modules re-export `NavItem`, `NavReference`, and `NavigationSnapshot` from the common SDK. Sections and folder-only groups are manifest declarations. Cross-plugin children require the parent's declared `ChildrenPoint` with interface `NavigationChildrenInterface` and the child's matching `Implements` entry. The host resolves authorized, available nodes and their effective parent and section. Browser types and shape validators are published at `@bytedesk/gateway-plugin-ui/v2/plugin/contracts`; relationship admission remains a host responsibility.
