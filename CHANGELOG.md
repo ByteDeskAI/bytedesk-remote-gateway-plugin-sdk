@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.4.0-rc.20 / 2.0.0-rc.14] - 2026-09-25
+
+### Added
+
+- Re-export the common SDK's optional `NavReference.point` in both Go modules
+  and generated browser contracts. Cross-plugin parent and section references
+  can name the owner's navigation seam without registering runtime
+  `Implements` dependencies.
+
+### Changed
+
+- Pin common SDK v0.4.0-rc.21 and v2.0.0-rc.16.
+
 ## [0.4.0-rc.19 / 2.0.0-rc.13] - 2026-09-25
 
 ### Added

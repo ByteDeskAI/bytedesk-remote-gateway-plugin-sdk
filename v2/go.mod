@@ -4,8 +4,8 @@ go 1.25.0
 
 // SDK SemVer (v2/VERSION) is independent of these pins.
 require (
-	github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.20
-	github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.15
+	github.com/ByteDeskAI/bytedesk-sdk-dependencies v0.4.0-rc.21
+	github.com/ByteDeskAI/bytedesk-sdk-dependencies/v2 v2.0.0-rc.16
 	github.com/nats-io/nats.go v1.48.0
 )
 
