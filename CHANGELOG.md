@@ -7,6 +7,14 @@
 - Re-export `ConsentCapabilities` and `CapabilityEnabled` from the v2 SDK.
   Requires `bytedesk-sdk-dependencies/v2@v2.0.0-rc.13`.
 
+## [2.0.0-rc.12] - 2026-09-25
+
+### Fixed
+
+- Preserve endpoint extension points in native service discovery replies. A
+  wire-level test verifies that the discovered descriptor can bind to its
+  declared AI decision point without calling the provider.
+
 ## [2.0.0-rc.11] - 2026-09-25
 
 ### Added
