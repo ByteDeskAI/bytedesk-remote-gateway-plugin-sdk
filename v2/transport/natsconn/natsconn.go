@@ -69,8 +69,9 @@ type Conn struct {
 	// Until then Conn reports only what the transport itself implements, so a
 	// caller that skipped the handshake cannot be told the substrate is
 	// durable.
-	caps  bus.Capabilities
-	bound bool
+	caps          bus.Capabilities
+	bound         bool
+	hostCallToken string
 	// deniedPublish records subjects the server refused a publish on. A core
 	// publish is asynchronous, so the refusal arrives after the call that
 	// caused it returned; recording it here is what turns it into a loud
@@ -249,6 +250,7 @@ func (c *Conn) Publish(ctx context.Context, subject bus.Subject, data []byte, op
 	m := nats.NewMsg(string(subject))
 	m.Data = data
 	m.Header = toNATSHeader(o.Headers)
+	c.bindHostCallHeader(m.Header, "")
 	if o.MsgID != "" {
 		m.Header.Set(natsMsgID, o.MsgID)
 	}
@@ -280,6 +282,7 @@ func (c *Conn) Request(ctx context.Context, subject bus.Subject, data []byte, op
 	m.Data = data
 	m.Header = toNATSHeader(o.Headers)
 	// Forwarded raw, exactly as the v1 SDK's rpcHost.Request does: the host
+	c.bindHostCallHeader(m.Header, string(subject))
 	// alone validates a present value (ContextForRequest/SubjectLeaseFromContext
 	// on the receiving end), so this client never duplicates that judgment and
 	// the two can never drift apart on what counts as canonical.

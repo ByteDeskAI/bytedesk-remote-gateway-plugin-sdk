@@ -14,10 +14,11 @@ const natsMsgID = "Nats-Msg-Id"
 
 // toNATSHeader writes bus headers onto the wire.
 //
-// The identity triple is stripped rather than forwarded: the substrate stamps
-// bd-caller, bd-generation and bd-subject from the connection's own credential,
-// and a client that could write them could act as someone else (R7). Everything
-// else under bd- is metadata and travels as the caller set it.
+// The identity triple is stripped rather than forwarded. This transport does
+// not authenticate arbitrary inbound bd-caller/bd-generation/bd-subject headers:
+// native host commands use the negotiated workload token, and provider-only
+// endpoints require host-enforced broker isolation. Everything else under bd-
+// is metadata and travels as the caller set it.
 func toNATSHeader(h bus.Headers) nats.Header {
 	out := nats.Header{}
 	for k, v := range bus.StripReserved(h) {
@@ -59,6 +60,7 @@ func (c *Conn) inbound(m *nats.Msg) *bus.Msg {
 			out := nats.NewMsg(reply)
 			out.Data = data
 			out.Header = toNATSHeader(h)
+			c.bindHostCallHeader(out.Header, "")
 			if err := c.nc.PublishMsg(out); err != nil {
 				return c.fault(bus.FaultUnavailable, reply, err)
 			}

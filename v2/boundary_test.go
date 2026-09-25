@@ -370,6 +370,7 @@ func publicTypes() []reflect.Type {
 		reflect.TypeOf(pluginsdk.Point("")),
 		reflect.TypeOf(pluginsdk.Registrar{}),
 		reflect.TypeOf(pluginsdk.Descriptor{}),
+		reflect.TypeOf(pluginsdk.Command[string, string]{}),
 		reflect.TypeOf(pluginsdk.ProjectViewContribution{}),
 		reflect.TypeOf(pluginsdk.DirectoryContextActionContribution{}),
 		reflect.TypeOf(pluginsdk.ProjectDirectoryContext{}),
@@ -471,12 +472,33 @@ func exportedTypes(t *testing.T, pkgDir string) []typeDecl {
 }
 
 func qualified(e ast.Expr) string {
+	// Generic aliases still resolve to one concrete public generic type. The
+	// registry walks an instantiation and typeName strips its arguments.
+	switch instantiated := e.(type) {
+	case *ast.IndexExpr:
+		return qualified(instantiated.X)
+	case *ast.IndexListExpr:
+		return qualified(instantiated.X)
+	}
 	if t, ok := e.(*ast.SelectorExpr); ok {
 		if id, ok := t.X.(*ast.Ident); ok {
 			return id.Name + "." + t.Sel.Name
 		}
 	}
 	return ""
+}
+
+func TestQualifiedAliasResolvesGenericBase(t *testing.T) {
+	for _, source := range []string{"plugin.Command[Req, Resp]", "plugin.Event[T]", "plugin.Descriptor"} {
+		expr, err := parser.ParseExpr(source)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := strings.Split(source, "[")[0]
+		if got := qualified(expr); got != want {
+			t.Fatalf("%s resolved to %q, want %q", source, got, want)
+		}
+	}
 }
 
 func typeKey(rt reflect.Type) string {

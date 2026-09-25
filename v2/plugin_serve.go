@@ -122,6 +122,15 @@ func ServePlugin(ctx context.Context, p Plugin, cfg PluginConfig) (result error)
 	if err := checkIdentity(have, p.ID()); err != nil {
 		return err
 	}
+	if have.HostCallToken != "" {
+		binder, supported := b.(interface{ BindHostCallToken(string) error })
+		if !supported {
+			return Fault{Code: FaultUnsupported, Op: string(NegotiateSubject), Message: "transport cannot bind host workload authentication"}
+		}
+		if err := binder.BindHostCallToken(have.HostCallToken); err != nil {
+			return err
+		}
+	}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

@@ -118,6 +118,9 @@ const (
 	// carrying an opaque lease id it can only ever echo from its own inbound
 	// request, never manufacture. See transport/natsconn.ContextForRequest.
 	HeaderSubjectLease = natsconn.HeaderSubjectLease
+	// HeaderHostCallToken is transport-managed workload authentication. It does
+	// not replace a subject lease or grant permission to perform an operation.
+	HeaderHostCallToken = natsconn.HeaderHostCallToken
 
 	GrantPublish   = bus.GrantPublish
 	GrantSubscribe = bus.GrantSubscribe
