@@ -21,6 +21,9 @@ const (
 	FeatureHTTPRoutes         = "http.routes.v1"
 	FeatureUIModuleMount      = plugin.FeatureUIModuleMount
 	FeatureGrantsDigest       = "grants.digest.v2"
+	// FeatureHostWorkloadAuth binds native host calls to the negotiated plugin
+	// generation. It is separate from a human subject lease and grants no verbs.
+	FeatureHostWorkloadAuth = "host.workload-auth.v1"
 )
 
 // NegotiateRequest is what a plugin sends. It is an assertion of identity and
@@ -57,6 +60,10 @@ type HostCapabilities struct {
 	Identity bus.Identity `json:"identity"`
 	// StateDir is where this plugin may persist state.
 	StateDir string `json:"stateDir,omitempty"`
+	// HostCallToken is a private, generation-bound bearer capability. The SDK
+	// forwards it only to cmd.gateway.* and must never log or persist it. The
+	// host delivers negotiation replies only to this plugin's admitted inbox.
+	HostCallToken string `json:"hostCallToken,omitempty"`
 	// Error is the host's refusal. A refusal arrives as a populated reply
 	// rather than a transport error so the reason survives.
 	Error string `json:"error,omitempty"`
@@ -99,7 +106,25 @@ func CheckProtocol(have HostCapabilities, need ProtocolRequirements, needs []str
 	if have.Generation == "" {
 		return Fault{Code: FaultSchema, Op: string(NegotiateSubject), Message: "host returned no generation"}
 	}
+	if slices.Contains(have.Features, FeatureHostWorkloadAuth) && !validHostCallToken(have.HostCallToken) {
+		return Fault{Code: FaultSchema, Op: string(NegotiateSubject), Message: "host workload authentication token is missing or malformed"}
+	}
+	if !slices.Contains(have.Features, FeatureHostWorkloadAuth) && have.HostCallToken != "" {
+		return Fault{Code: FaultSchema, Op: string(NegotiateSubject), Message: "host supplied an unnegotiated workload authentication token"}
+	}
 	return nil
+}
+
+func validHostCallToken(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	for _, c := range value {
+		if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f') {
+			return false
+		}
+	}
+	return true
 }
 
 // checkIdentity is the half of the handshake that is about WHO, kept separate
@@ -112,6 +137,9 @@ func checkIdentity(have HostCapabilities, id string) error {
 	if have.Identity.PluginID != "" && have.Identity.PluginID != id {
 		return Fault{Code: FaultDenied, Op: string(NegotiateSubject),
 			Message: fmt.Sprintf("host bound identity %q to plugin %q", have.Identity.PluginID, id)}
+	}
+	if have.Identity.Generation != "" && have.Identity.Generation != have.Generation {
+		return Fault{Code: FaultDenied, Op: string(NegotiateSubject), Message: "host returned conflicting workload generations"}
 	}
 	return nil
 }

@@ -1,6 +1,6 @@
 {
   "name": "@bytedesk/gateway-plugin-ui",
-  "version": "2.0.0-rc.9",
+  "version": "2.0.0-rc.11",
   "type": "module",
   "description": "Portable Gateway plugin UI contracts and runtime snapshot validation",
   "exports": {
@@ -18,7 +18,32 @@
       "types": "./ui/v2/webapps/contracts.d.ts",
       "import": "./ui/v2/webapps/validators.js"
     },
-    "./v2/webapps/descriptors": "./ui/v2/webapps/descriptors.js"
+    "./v2/webapps/descriptors": "./ui/v2/webapps/descriptors.js",
+    "./v2/aidecision/contracts": {
+      "types": "./ui/v2/aidecision/contracts.d.ts",
+      "import": "./ui/v2/aidecision/validators.js"
+    },
+    "./v2/aidecision/descriptors": "./ui/v2/aidecision/descriptors.js",
+    "./v2/payloads/contracts": {
+      "types": "./ui/v2/payloads/contracts.d.ts",
+      "import": "./ui/v2/payloads/validators.js"
+    },
+    "./v2/payloads/descriptors": "./ui/v2/payloads/descriptors.js",
+    "./v2/provideraccess/contracts": {
+      "types": "./ui/v2/provideraccess/contracts.d.ts",
+      "import": "./ui/v2/provideraccess/validators.js"
+    },
+    "./v2/provideraccess/descriptors": "./ui/v2/provideraccess/descriptors.js",
+    "./v2/codingsessions/contracts": {
+      "types": "./ui/v2/codingsessions/contracts.d.ts",
+      "import": "./ui/v2/codingsessions/validators.js"
+    },
+    "./v2/codingsessions/descriptors": "./ui/v2/codingsessions/descriptors.js",
+    "./v2/hostsettings/contracts": {
+      "types": "./ui/v2/hostsettings/contracts.d.ts",
+      "import": "./ui/v2/hostsettings/validators.js"
+    },
+    "./v2/hostsettings/descriptors": "./ui/v2/hostsettings/descriptors.js"
   },
   "files": [
     "ui/index.js",
@@ -34,10 +59,26 @@
     "ui/v2/schemas.json",
     "ui/v2/webapps/contracts.d.ts",
     "ui/v2/webapps/validators.js",
-    "ui/v2/webapps/descriptors.js"
+    "ui/v2/webapps/descriptors.js",
+    "ui/v2/aidecision/contracts.d.ts",
+    "ui/v2/aidecision/validators.js",
+    "ui/v2/aidecision/descriptors.js",
+    "ui/v2/payloads/contracts.d.ts",
+    "ui/v2/payloads/validators.js",
+    "ui/v2/payloads/descriptors.js",
+    "ui/v2/provideraccess/contracts.d.ts",
+    "ui/v2/provideraccess/validators.js",
+    "ui/v2/provideraccess/descriptors.js",
+    "ui/v2/codingsessions/contracts.d.ts",
+    "ui/v2/codingsessions/validators.js",
+    "ui/v2/codingsessions/descriptors.js",
+    "ui/v2/hostsettings/contracts.d.ts",
+    "ui/v2/hostsettings/validators.js",
+    "ui/v2/hostsettings/descriptors.js"
   ],
   "scripts": {
-    "test": "node --test ui/*.test.js"
+    "test": "node --test ui/*.test.js",
+    "sync:v2": "go run ./cmd/sync-ui-v2"
   },
   "engines": {
     "node": ">=22"

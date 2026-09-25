@@ -7,6 +7,18 @@
 - Re-export `ConsentCapabilities` and `CapabilityEnabled` from the v2 SDK.
   Requires `bytedesk-sdk-dependencies/v2@v2.0.0-rc.13`.
 
+## [2.0.0-rc.11] - 2026-09-25
+
+### Added
+
+- Typed AI decision, payload, provider-access, coding-session and host-settings
+  re-exports from shared SDK v2.0.0-rc.14, including browser contracts.
+- Strict command and discovered-descriptor helpers for public AI providers.
+- Negotiated workload authentication for native host requests, bound to the
+  admitted generation. Tokens are never forwarded to peers or replies.
+- An explicit `ai.decision.v1` host readiness feature covering the complete
+  host-owned decision, invocation, egress, payload and secret-settings boundary.
+
 ## [2.0.0-rc.9] - 2026-09-19
 
 ### Added
