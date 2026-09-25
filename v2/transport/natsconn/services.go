@@ -239,7 +239,7 @@ func (s *service) Info() bus.ServiceInfo {
 		if group == "" {
 			group = s.spec.QueueGroup
 		}
-		eps = append(eps, bus.EndpointInfo{Name: ep.Name, Subject: ep.Subject, QueueGroup: group})
+		eps = append(eps, bus.EndpointInfo{Name: ep.Name, Subject: ep.Subject, QueueGroup: group, Point: ep.Point})
 	}
 	return bus.ServiceInfo{
 		ID:        s.id,
