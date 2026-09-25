@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Re-export `ConsentCapabilities` and `CapabilityEnabled` from the v2 SDK.
+  Requires `bytedesk-sdk-dependencies/v2@v2.0.0-rc.13`.
+
 ## [2.0.0-rc.9] - 2026-09-19
 
 ### Added

@@ -343,6 +343,7 @@ func publicTypes() []reflect.Type {
 		reflect.TypeOf(pluginsdk.Base{}),
 		reflect.TypeOf(pluginsdk.Binding{}),
 		reflect.TypeOf(pluginsdk.Manifest{}),
+		reflect.TypeOf(pluginsdk.ConsentCapability{}),
 		iface((*pluginsdk.Logger)(nil)),
 		iface((*pluginsdk.Profiler)(nil)),
 		iface((*pluginsdk.HTTPPlugin)(nil)),

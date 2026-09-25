@@ -45,13 +45,14 @@ type (
 	Scheduler    = bus.Scheduler
 	Trace        = bus.Trace
 
-	Plugin   = plugin.Plugin
-	Bound    = plugin.Bound
-	Base     = plugin.Base
-	Binding  = plugin.Binding
-	Manifest = plugin.Manifest
-	Logger   = plugin.Logger
-	Profiler = plugin.Profiler
+	Plugin            = plugin.Plugin
+	Bound             = plugin.Bound
+	Base              = plugin.Base
+	Binding           = plugin.Binding
+	Manifest          = plugin.Manifest
+	ConsentCapability = plugin.ConsentCapability
+	Logger            = plugin.Logger
+	Profiler          = plugin.Profiler
 
 	HTTPPlugin        = plugin.HTTPPlugin
 	HealthContributor = plugin.HealthContributor
@@ -147,6 +148,22 @@ func OwnNamespace(id string) Grants { return plugin.OwnNamespace(id) }
 // GrantsDigest is what an operator's consent is keyed by. plugin-sdk pack
 // prints it, and every dev-grants entry re-approves once when it changes.
 func GrantsDigest(m Manifest) string { return plugin.GrantsDigest(m) }
+
+// ConsentCapabilities is the install-sheet list for this manifest. The
+// sentences are the host catalog, the same ids CapabilityEnabled checks.
+func ConsentCapabilities(m Manifest) []ConsentCapability { return plugin.ConsentCapabilities(m) }
+
+// CapabilityEnabled reports whether the host grant turns id on.
+func CapabilityEnabled(granted []string, id string) bool {
+	return plugin.CapabilityEnabled(granted, id)
+}
+
+const (
+	CapabilityCredentialSecret  = plugin.CapabilityCredentialSecret
+	CapabilityEgressProvider    = plugin.CapabilityEgressProvider
+	CapabilityProcessSupervised = plugin.CapabilityProcessSupervised
+	CapabilityIngressPublish    = plugin.CapabilityIngressPublish
+)
 
 // CallerOf reads the caller identity the substrate stamped on a message.
 func CallerOf(m *Msg) Caller { return bus.CallerOf(m) }
