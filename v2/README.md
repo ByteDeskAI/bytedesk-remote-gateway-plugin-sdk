@@ -15,10 +15,27 @@ imports one module.
 | `.` | aliases, the v2 handshake (`ServePlugin`), HTTP serving, packaging |
 | `sessioncontext` | lease-scoped opaque host interaction context (`open`, `refresh`, named `action`) |
 | `webapps` | typed host-owned discovery, creation, coding, services, logs, preview, and replay |
+| `codingsessions` | durable coding tasks, explicit originating work-unit links, routing, approvals and shared surfaces |
 | `transport/natsconn` | the NATS transport, and the **only** importer of `github.com/nats-io/*` |
 | `v1compat` | the v1 `Host` facade over a bound v2 `Base`, for migrating plugins |
 | `cmd/plugin-sdk` | `validate`, `pack` (prints the grants digest), `digest`, `mcp` |
 | `internal/fakebroker` | a hand-written NATS peer for the SDK's own tests |
+
+## Originating Task Management work units
+
+Create/NewTask accept an optional `codingsessions.WorkUnitReference{TaskID: "TM-001"}`.
+The selected project and checkout determine the host-authorized store. Never send
+store paths, URLs, ports or binding IDs. The host resolves the exact task and
+returns `Session.WorkUnit` as `BoundWorkUnit{TaskID, BindingID}`; the opaque binding
+is output-only, not permission to access that work unit. Preserve task IDs exactly,
+including zero padding. When that authoritative work unit completes, the host ends
+the linked shared session. Missing or unavailable task state is not completion.
+
+Omitting the field creates an unlinked task. NewTask does not inherit the previous
+link. The host must not infer a link from prompt text or an active epic. Use a host
+advertising the complete `FeatureCodingSessionsV1` guarantee and regenerate client
+browser artifacts after updating the released SDK pin; schema digests change with
+the canonical DTOs even though the work-unit field is optional.
 
 ## Writing a plugin
 

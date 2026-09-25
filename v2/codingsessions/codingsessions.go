@@ -64,6 +64,8 @@ type (
 	Overrides                  = common.Overrides
 	Preferences                = common.Preferences
 	Route                      = common.Route
+	WorkUnitReference          = common.WorkUnitReference
+	BoundWorkUnit              = common.BoundWorkUnit
 	Session                    = common.Session
 	CreateRequest              = common.CreateRequest
 	SessionResult              = common.SessionResult
