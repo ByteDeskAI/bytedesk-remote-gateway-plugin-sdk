@@ -387,6 +387,9 @@ export function isExtensionPoint(value) {
   if (!(str(value.name))) return false
   if (!(value.interface === undefined || str(value.interface))) return false
   if (!(value.description === undefined || str(value.description))) return false
+  if (!(value.zone === undefined || str(value.zone))) return false
+  if (!(value.sealed === undefined || bool(value.sealed))) return false
+  if (!(value.requiredBase === undefined || str(value.requiredBase))) return false
   return true
 }
 
@@ -477,6 +480,43 @@ export function isNavItem(value) {
   if (!(value.icon === undefined || str(value.icon))) return false
   if (!(str(value.href))) return false
   if (!(value.order === undefined || num(value.order))) return false
+  if (!(value.kind === undefined || str(value.kind))) return false
+  if (!(value.section === undefined || isNavReference(value.section))) return false
+  if (!(value.parent === undefined || isNavReference(value.parent))) return false
+  if (!(value.childrenPoint === undefined || str(value.childrenPoint))) return false
+  if (!(value.placement === undefined || str(value.placement))) return false
+  if (!(value.newTab === undefined || bool(value.newTab))) return false
+  return true
+}
+
+export function isNavReference(value) {
+  if (!record(value)) return false
+  if (!(str(value.owner))) return false
+  if (!(str(value.id))) return false
+  return true
+}
+
+export function isNavigationDiagnostic(value) {
+  if (!record(value)) return false
+  if (!(str(value.owner))) return false
+  if (!(str(value.id))) return false
+  if (!(str(value.code))) return false
+  return true
+}
+
+export function isNavigationNode(value) {
+  if (!record(value)) return false
+  if (!(str(value.owner))) return false
+  if (!(isNavItem(value.item))) return false
+  if (!(value.parent === undefined || isNavReference(value.parent))) return false
+  if (!(value.section === undefined || isNavReference(value.section))) return false
+  return true
+}
+
+export function isNavigationSnapshot(value) {
+  if (!record(value)) return false
+  if (!(value.items === null || list(value.items, isNavigationNode))) return false
+  if (!(value.diagnostics === null || list(value.diagnostics, isNavigationDiagnostic))) return false
   return true
 }
 
@@ -600,6 +640,7 @@ export function isProvider(value) {
   if (!(str(value.point))) return false
   if (!(str(value.id))) return false
   if (!(value.priority === undefined || num(value.priority))) return false
+  if (!(value.base === undefined || str(value.base))) return false
   return true
 }
 
@@ -608,6 +649,7 @@ export function isPublisher(value) {
   if (!(str(value.id))) return false
   if (!(str(value.name))) return false
   if (!(value.url === undefined || str(value.url))) return false
+  if (!(value.color === undefined || str(value.color))) return false
   return true
 }
 

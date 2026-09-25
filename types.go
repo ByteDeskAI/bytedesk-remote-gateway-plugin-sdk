@@ -13,14 +13,18 @@ import (
 // Common types inherited from sdk-dependencies. Plugin authors should
 // import this module only; do not redefine Manifest.
 type (
-	Manifest     = plugin.Manifest
-	NavItem      = plugin.NavItem
-	PanelSpec    = plugin.PanelSpec
-	LauncherSpec = plugin.LauncherSpec
-	Pricing      = plugin.Pricing
-	Publisher    = plugin.Publisher
-	Requirement  = plugin.Requirement
-	Envelope     = bus.Envelope
+	NavReference         = plugin.NavReference
+	NavigationNode       = plugin.NavigationNode
+	NavigationDiagnostic = plugin.NavigationDiagnostic
+	NavigationSnapshot   = plugin.NavigationSnapshot
+	Manifest             = plugin.Manifest
+	NavItem              = plugin.NavItem
+	PanelSpec            = plugin.PanelSpec
+	LauncherSpec         = plugin.LauncherSpec
+	Pricing              = plugin.Pricing
+	Publisher            = plugin.Publisher
+	Requirement          = plugin.Requirement
+	Envelope             = bus.Envelope
 
 	// ManifestConfig describes settings, unlike Config, which configures Serve.
 	ManifestConfig          = plugin.Config
@@ -115,10 +119,17 @@ type (
 func NopProfiler() Profiler { return plugin.NopProfiler() }
 
 const (
-	TargetGateway = plugin.TargetGateway
-	TargetVault   = plugin.TargetVault
-	RoleSystem    = plugin.RoleSystem
-	RoleExtension = plugin.RoleExtension
+	NavKindLink                 = plugin.NavKindLink
+	NavKindGroup                = plugin.NavKindGroup
+	NavKindSection              = plugin.NavKindSection
+	NavPlacementMain            = plugin.NavPlacementMain
+	NavPlacementPinned          = plugin.NavPlacementPinned
+	NavPlacementFooter          = plugin.NavPlacementFooter
+	NavigationChildrenInterface = plugin.NavigationChildrenInterface
+	TargetGateway               = plugin.TargetGateway
+	TargetVault                 = plugin.TargetVault
+	RoleSystem                  = plugin.RoleSystem
+	RoleExtension               = plugin.RoleExtension
 
 	ConfigKindBool       = plugin.ConfigKindBool
 	ConfigKindInt        = plugin.ConfigKindInt
@@ -444,3 +455,6 @@ func Handle[Req, Resp Payload](r *Registrar, c Command[Req, Resp], fn func(conte
 
 // CallerOf reads the caller identity a host stamped on an envelope.
 func CallerOf(env Envelope) Caller { return plugin.CallerOf(env) }
+
+// ValidateNavigation checks declaration shape; the host resolves relationships.
+func ValidateNavigation(items []NavItem) error { return plugin.ValidateNavigation(items) }
