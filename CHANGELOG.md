@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-rc.15] - 2026-09-25
+
+### Added
+
+- Re-export explicit coding work-unit references and opaque host-bound task
+  identity from common SDK v2.0.0-rc.17. Update canonical browser contracts and
+  document authoritative linked-task completion as part of coding readiness.
+
 ## [Unreleased]
 
 ## [0.4.0-rc.20 / 2.0.0-rc.14] - 2026-09-25

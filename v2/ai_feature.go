@@ -13,5 +13,8 @@ const FeatureAIDecisionV1 = "ai.decision.v1"
 // durable task lifecycle and ordered recovery; task-bound provider/model/config
 // routing; enforceable permission modes; isolated committed-checkout worktrees;
 // and Projects/dock attachment to the same session with explicit close ending it.
+// Explicit originating Task Management links are host-authorized and immutable;
+// authoritative completion ends the linked shared session. Unlinked tasks remain
+// supported, and new tasks never silently inherit an earlier work-unit link.
 // Hosts must not advertise it for a partial command or UI-only implementation.
 const FeatureCodingSessionsV1 = "coding.sessions.v1"
