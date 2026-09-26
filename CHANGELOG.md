@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0] - 2026-09-26
+
+### Changed
+
+- Release the v2 module as 2.0.0. Requires `bytedesk-sdk-dependencies/v2@v2.0.0`.
+
 ## [2.0.0-rc.15] - 2026-09-25
 
 ### Added
