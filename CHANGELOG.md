@@ -16,6 +16,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Document the gateway socket split for SDK v2 consumers. Protocol major 1 keeps `GATEWAY_HOST_SOCKET`. Protocol major 2 uses `GATEWAY_BUS_SOCKET` and `GATEWAY_BUS_CREDS` and does not receive the v1 host socket.
+
 ## [0.4.0-rc.20 / 2.0.0-rc.14] - 2026-09-25
 
 ### Added
